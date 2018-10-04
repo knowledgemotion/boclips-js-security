@@ -1,6 +1,6 @@
 {
   "name": "boclips-js-security",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Boclips Keycloak Wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
