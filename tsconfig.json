@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "target": "es5",
+    "lib": ["es2015", "es6", "dom"],
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "plugins": [
+      { "name": "tslint-language-service" }
+    ]
+  }
+}
