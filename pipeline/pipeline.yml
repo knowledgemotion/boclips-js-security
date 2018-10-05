@@ -9,7 +9,7 @@ jobs:
       depth: 1
   - put: version
     params:
-      bump: minor
+      bump: patch
   - task: build
     file: source/pipeline/build.yml
   - put: npm-registry
@@ -17,8 +17,7 @@ jobs:
       username: {{npm-username}}
       password: {{npm-password}}
       email: engineering@boclips.com
-      path: resource-npm-package
-      tag: latest
+      path: dist
 
 resources:
 - name: source
@@ -42,7 +41,6 @@ resources:
   type: npm-resource
   source:
     package_name: boclips-js-security
-    registry: https://registry.npmjs.org
 
 resource_types:
 - name: npm-resource

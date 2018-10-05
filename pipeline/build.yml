@@ -11,5 +11,8 @@ inputs:
 - name: source
 - name: version
 
+outputs:
+- name: dist
+
 run:
   path: source/pipeline/build.sh
