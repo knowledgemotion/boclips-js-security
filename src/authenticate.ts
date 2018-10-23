@@ -26,11 +26,14 @@ export default function authenticate(
       }
     });
 
+
   axios.interceptors.request.use(config => {
     // @ts-ignore
     return keycloak.updateToken(5).then(() => {
       updateLocalStorage();
-      config.headers.Authorization = `Bearer ${keycloak.token}`;
+      if (keycloak.authenticated && keycloak.token) {
+        config.headers.Authorization = `Bearer ${keycloak.token}`;
+      }
       return Promise.resolve(config);
     })
       .catch(() => {
