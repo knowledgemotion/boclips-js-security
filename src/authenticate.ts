@@ -39,6 +39,8 @@ export default function authenticate(
       .catch(() => {
         if (mode === 'login-required') {
           keycloak.login();
+        } else {
+          return Promise.resolve(config);
         }
       });
   });
