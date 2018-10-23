@@ -5,6 +5,7 @@ export default function authenticate(
   onLogin: (keycloak: Keycloak.KeycloakInstance) => void,
   realm: string,
   clientId: string,
+  mode: 'login-required' | 'check-sso' = 'login-required',
   keycloakUrl?: string,
 ) {
 
@@ -17,7 +18,7 @@ export default function authenticate(
   const token = localStorage.getItem('kc_token') || undefined;
   const refreshToken = localStorage.getItem('kc_refreshToken') || undefined;
 
-  keycloak.init({onLoad: 'login-required', token, refreshToken})
+  keycloak.init({onLoad: mode, token, refreshToken})
     .success(authenticated => {
       if (authenticated) {
         updateLocalStorage();
