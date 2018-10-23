@@ -18,7 +18,7 @@ export default function authenticate(
   const token = localStorage.getItem('kc_token') || undefined;
   const refreshToken = localStorage.getItem('kc_refreshToken') || undefined;
 
-  keycloak.init({onLoad: mode, token, refreshToken})
+  keycloak.init({onLoad: mode, token, refreshToken, checkLoginIframe: false})
     .success(authenticated => {
       if (authenticated) {
         updateLocalStorage();
