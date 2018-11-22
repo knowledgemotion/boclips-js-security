@@ -1,3 +1,3 @@
-import authenticate from './src/authenticate';
+import { authenticate, logout } from './src/authenticate';
 
-export { authenticate };
+export { authenticate, logout };

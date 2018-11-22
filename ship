@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+git pull -r
+
+npm i
+npm run compile
+npm run build
+npm run test
+
+git push

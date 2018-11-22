@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+npm run demo &
+demo_webserver_pid=$!
+
+CYPRESS_BACKOFFICE_USERNAME="$(lpass show e2e-backoffice-testing --username)"
+CYPRESS_BACKOFFICE_PASSWORD="$(lpass show e2e-backoffice-testing --password)"
+
+cleanup() {
+        echo "Killing webserver with pid: $demo_webserver_pid"
+        kill "$demo_webserver_pid"
+}
+
+trap "cleanup" INT QUIT TERM EXIT
+npm run e2e:ci

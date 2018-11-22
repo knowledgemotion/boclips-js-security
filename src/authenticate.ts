@@ -1,7 +1,9 @@
 import axios from 'axios';
 import * as Keycloak from 'keycloak-js';
 
-export default function authenticate(
+let keycloak;
+
+export function authenticate(
   onLogin: (keycloak: Keycloak.KeycloakInstance) => void,
   realm: string,
   clientId: string,
@@ -14,7 +16,7 @@ export default function authenticate(
   const url = keycloakUrl || `https://login.${domain}/auth`;
 
   // @ts-ignore
-  const keycloak = Keycloak({url, realm, clientId});
+  keycloak = Keycloak({url, realm, clientId});
   const token = localStorage.getItem('kc_token') || undefined;
   const refreshToken = localStorage.getItem('kc_refreshToken') || undefined;
 
@@ -33,6 +35,8 @@ export default function authenticate(
       updateLocalStorage();
       if (keycloak.authenticated && keycloak.token) {
         config.headers.Authorization = `Bearer ${keycloak.token}`;
+      } else {
+        delete config.headers.Authorization;
       }
       return Promise.resolve(config);
     })
@@ -50,4 +54,15 @@ export default function authenticate(
     localStorage.setItem('kc_refreshToken', keycloak.refreshToken!);
   };
 
+}
+
+export interface LogoutOptions {
+  redirectUri: string
+}
+
+export function logout(options?: LogoutOptions) {
+  if( !keycloak ) {
+    console.error("Cannot logout if user is not authenticated first")
+  }
+  keycloak.logout(options)
 }

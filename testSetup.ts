@@ -1,4 +1,6 @@
 import { JSDOM } from 'jsdom';
+import 'jest-localstorage-mock';
+
 
 const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
 const { window } = jsdom;
