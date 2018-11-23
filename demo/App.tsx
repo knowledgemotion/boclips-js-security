@@ -15,11 +15,11 @@ class Body extends Component {
     super(props);
 
     // Set the state directly. Use props if necessary.
-    this.state = {downloaded: false};
+    this.state = {authWorks: false};
   }
 
   render(): React.ReactNode {
-    return this.state['downloaded'] && <section>
+    return this.state['authWorks'] && <section>
         <div><strong>WORKS</strong></div>
         <br/>
         <button id="logout" onClick={() => logout()}>LOGOUT</button>
@@ -28,7 +28,7 @@ class Body extends Component {
 
   componentWillMount() {
     axios.get('https://marketing-service.testing-boclips.com/v1/marketing-collections').then(() => {
-      this.setState({downloaded: true});
+      this.setState({authWorks: true});
     });
   }
 }

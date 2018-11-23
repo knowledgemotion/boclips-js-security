@@ -28,8 +28,7 @@ export function authenticate(
     });
 
   axios.interceptors.request.use(config => {
-    // @ts-ignore
-    return getKeycloak().updateToken(5).then(() => {
+    return getKeycloak().updateToken(5).success(() => {
       updateLocalStorage();
       if (getKeycloak().authenticated && getKeycloak().token) {
         config.headers.Authorization = `Bearer ${getKeycloak().token}`;
@@ -38,7 +37,7 @@ export function authenticate(
       }
       return Promise.resolve(config);
     })
-      .catch(() => {
+      .error(() => {
         if (mode === 'login-required') {
           getKeycloak().login();
         } else {
