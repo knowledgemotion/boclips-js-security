@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
-    "keycloak-js": "^4.5.0"
+    "keycloak-js": "4.5.0"
   },
   "devDependencies": {
     "@types/react": "^16.4.14",
