@@ -1,7 +1,6 @@
 import axios from 'axios';
 import * as Keycloak from 'keycloak-js';
 
-let keycloak;
 
 export function authenticate(
   onLogin: (keycloak: Keycloak.KeycloakInstance) => void,
@@ -16,25 +15,24 @@ export function authenticate(
   const url = keycloakUrl || `https://login.${domain}/auth`;
 
   // @ts-ignore
-  keycloak = Keycloak({url, realm, clientId});
+  setKeycloak(Keycloak({url, realm, clientId}));
   const token = localStorage.getItem('kc_token') || undefined;
   const refreshToken = localStorage.getItem('kc_refreshToken') || undefined;
 
-  keycloak.init({onLoad: mode, token, refreshToken, checkLoginIframe: false})
+  getKeycloak().init({onLoad: mode, token, refreshToken, checkLoginIframe: false})
     .success(authenticated => {
       if (authenticated) {
         updateLocalStorage();
-        onLogin(keycloak);
+        onLogin(getKeycloak());
       }
     });
 
-
   axios.interceptors.request.use(config => {
     // @ts-ignore
-    return keycloak.updateToken(5).then(() => {
+    return getKeycloak().updateToken(5).then(() => {
       updateLocalStorage();
-      if (keycloak.authenticated && keycloak.token) {
-        config.headers.Authorization = `Bearer ${keycloak.token}`;
+      if (getKeycloak().authenticated && getKeycloak().token) {
+        config.headers.Authorization = `Bearer ${getKeycloak().token}`;
       } else {
         delete config.headers.Authorization;
       }
@@ -42,7 +40,7 @@ export function authenticate(
     })
       .catch(() => {
         if (mode === 'login-required') {
-          keycloak.login();
+          getKeycloak().login();
         } else {
           return Promise.resolve(config);
         }
@@ -50,19 +48,26 @@ export function authenticate(
   });
 
   const updateLocalStorage = () => {
-    localStorage.setItem('kc_token', keycloak.token!);
-    localStorage.setItem('kc_refreshToken', keycloak.refreshToken!);
+    localStorage.setItem('kc_token', getKeycloak().token!);
+    localStorage.setItem('kc_refreshToken', getKeycloak().refreshToken!);
   };
 
 }
+  function setKeycloak(keycloak: Keycloak.KeycloakInstance) {
+    window['keycloak'] = keycloak; // but forgive for we have sinned
+  }
+
+  function getKeycloak() {
+    return window['keycloak'];
+  }
 
 export interface LogoutOptions {
   redirectUri: string
 }
 
 export function logout(options?: LogoutOptions) {
-  if( !keycloak ) {
+  if( !getKeycloak() ) {
     console.error("Cannot logout if user is not authenticated first")
   }
-  keycloak.logout(options)
+  getKeycloak().logout(options)
 }

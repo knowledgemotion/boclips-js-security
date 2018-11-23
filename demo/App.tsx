@@ -1,10 +1,34 @@
-import * as React from "react";
+import axios from 'axios';
+import * as React from 'react';
+import { Component } from 'react';
 import * as ReactDom from 'react-dom';
 import { authenticate, logout } from '../src/authenticate';
 
 authenticate(() => {
-  ReactDom.render(<section>
-    <div><strong> I see it</strong> keycloak is the beast, and I am logged in</div>
-    <button id="logout" onClick={() => logout()}>LOGOUT</button>
-  </section>, document.getElementById('content'));
-}, 'backoffice', 'backoffice-ui', 'https://login.testing-boclips.com/auth');
+  ReactDom.render(<Body/>, document.getElementById('content'));
+}, 'backoffice', 'backoffice-ui', 'login-required', 'https://login.testing-boclips.com/auth');
+
+class Body extends Component {
+
+  constructor(props) {
+    // Required step: always call the parent class' constructor
+    super(props);
+
+    // Set the state directly. Use props if necessary.
+    this.state = {downloaded: false};
+  }
+
+  render(): React.ReactNode {
+    return this.state['downloaded'] && <section>
+        <div><strong>WORKS</strong></div>
+        <br/>
+        <button id="logout" onClick={() => logout()}>LOGOUT</button>
+    </section>;
+  }
+
+  componentWillMount() {
+    axios.get('https://marketing-service.testing-boclips.com/v1/marketing-collections').then(() => {
+      this.setState({downloaded: true});
+    });
+  }
+}

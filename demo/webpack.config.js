@@ -5,6 +5,7 @@ const distPath = path.resolve(__dirname, 'dist');
 
 module.exports = {
   mode: 'development',
+  devtool: "eval-source-map",
   entry: path.resolve(__dirname, 'App.tsx'),
   output: {
     path: distPath,
