@@ -13,8 +13,8 @@ describe('Login journey', function () {
 });
 
 function logIn() {
-    cy.get("#username").type(Cypress.env("BACKOFFICE_USERNAME"));
-    cy.get("#password").type(Cypress.env("BACKOFFICE_PASSWORD"));
+    cy.get("#username").type(Cypress.env("EDUCATORS_USERNAME"));
+    cy.get("#password").type(Cypress.env("EDUCATORS_PASSWORD"));
     cy.get("#kc-form-login").submit();
     return this;
 }

@@ -3,8 +3,8 @@
 npm run demo &
 demo_webserver_pid=$!
 
-CYPRESS_BACKOFFICE_USERNAME="$(lpass show e2e-backoffice-testing --username)"
-CYPRESS_BACKOFFICE_PASSWORD="$(lpass show e2e-backoffice-testing --password)"
+CYPRESS_TEACHERS_USERNAME="$(lpass show e2e-teachers-testing --username)"
+CYPRESS_TEACHERS_PASSWORD="$(lpass show e2e-teachers-testing --password)"
 
 cleanup() {
         echo "Killing webserver with pid: $demo_webserver_pid"

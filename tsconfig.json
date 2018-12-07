@@ -9,10 +9,11 @@
       "es2015",
       "es6",
       "dom"
-    ]
+    ],
+    "skipLibCheck": true
   },
-  "include": [
-    "index.ts",
-    "src/**/*"
-  ]
+  "exclude": [
+    "dist"
+  ],
+  "compileOnSave": false
 }
