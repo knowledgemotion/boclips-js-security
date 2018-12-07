@@ -15,7 +15,11 @@ authenticate(
   'https://login.testing-boclips.com/auth',
 );
 
-class Body extends Component {
+interface State {
+  authWorks: boolean;
+}
+
+class Body extends Component<{}, State> {
   constructor(props) {
     super(props);
     this.state = { authWorks: false };
