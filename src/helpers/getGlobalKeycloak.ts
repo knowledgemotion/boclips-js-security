@@ -1,3 +1,3 @@
 export default function getGlobalKeycloak() {
-  return window['keycloak'];
+  return window.keycloak;
 }

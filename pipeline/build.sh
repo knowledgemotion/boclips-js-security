@@ -6,6 +6,7 @@ app=source
 (
 cd ${app}
 npm i
+npm run test
 npm run build
 git checkout package-lock.json
 npm --no-git-tag-version -f version "$(< ../version/version)"

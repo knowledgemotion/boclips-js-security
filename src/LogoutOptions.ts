@@ -1,3 +1,3 @@
 export interface LogoutOptions {
-  redirectUri: string
+  redirectUri: string;
 }

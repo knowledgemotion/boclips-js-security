@@ -7,23 +7,26 @@
     "exclude": [
       "webpack-config/*.js",
       "node_modules/**/*.ts"
+    ]
+  },
+  "rulesDirectory": [
+    "tslint-plugin-prettier"
+  ],
+  "rules": {
+    "interface-name": [
+      true,
+      "never-prefix"
     ],
-    "rulesDirectory": [
-      "tslint-plugin-prettier"
+    "no-empty-interface": false,
+    "unified-signatures": false,
+    "no-console": false,
+    "object-literal-sort-keys": false,
+    "member-ordering": false,
+    "max-classes-per-file": false,
+    "prettier": [
+      true,
+      ".prettierrc"
     ],
-    "rules": {
-      "interface-name": false,
-      "no-empty-interface": false,
-      "unified-signatures": false,
-      "no-console": false,
-      "object-literal-sort-keys": false,
-      "member-ordering": false,
-      "max-classes-per-file": false,
-      "prettier": [
-        true,
-        ".prettierrc"
-      ],
-      "no-empty": false
-    }
+    "no-empty": false
   }
 }

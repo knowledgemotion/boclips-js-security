@@ -30,7 +30,8 @@ module.exports = {
   ],
 
   testPathIgnorePatterns: [
-    'node_modules',
+    "node_modules",
+    "dist"
   ],
 
   // A map from regular expressions to paths to transformers

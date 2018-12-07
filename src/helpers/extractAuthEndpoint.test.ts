@@ -14,10 +14,10 @@ test("extracts login endpoint for production", () => {
   expect(extractAuthEndpoint("boclips.com")).toEqual("https://login.boclips.com/auth");
 });
 
-test("localhost defaults to testing", () => {
-  expect(extractAuthEndpoint("localhost:123123")).toEqual("https://login.testing-boclips.com/auth");
+test("localhost defaults to staging", () => {
+  expect(extractAuthEndpoint("localhost:123123")).toEqual("https://login.staging-boclips.com/auth");
 });
 
-test("anything defaults to testing", () => {
-  expect(extractAuthEndpoint("123_garbage")).toEqual("https://login.testing-boclips.com/auth");
+test("anything defaults to staging", () => {
+  expect(extractAuthEndpoint("123_garbage")).toEqual("https://login.staging-boclips.com/auth");
 });

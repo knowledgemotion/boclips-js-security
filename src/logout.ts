@@ -1,11 +1,11 @@
-import getGlobalKeycloak from "./helpers/getGlobalKeycloak";
-import { LogoutOptions } from "./LogoutOptions";
+import getGlobalKeycloak from './helpers/getGlobalKeycloak';
+import { LogoutOptions } from './LogoutOptions';
 
 export function logout(options?: LogoutOptions) {
-  let keycloakInstance = getGlobalKeycloak();
+  const keycloakInstance = getGlobalKeycloak();
   if (keycloakInstance) {
     keycloakInstance.logout(options);
     return;
   }
-  console.error("Cannot logout if user is not authenticated first");
+  console.error('Cannot logout if user is not authenticated first');
 }
