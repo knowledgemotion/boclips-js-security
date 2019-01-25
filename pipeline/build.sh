@@ -5,7 +5,8 @@ set -x -e
 app=source
 (
 cd ${app}
-npm i
+npm audit
+npm ci
 npm run test
 npm run build
 git checkout package-lock.json
