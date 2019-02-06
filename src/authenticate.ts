@@ -3,25 +3,25 @@ import * as Keycloak from 'keycloak-js';
 import extractAuthEndpoint from './helpers/extractAuthEndpoint';
 import getGlobalKeycloak from './helpers/getGlobalKeycloak';
 import setGlobalKeycloak from './helpers/setGlobalKeycloak';
+import { AuthenticateOptions } from './AuthenticateOptions';
 
 const LOGIN_REQUIRED = 'login-required';
 
-export function authenticate(
-  onLogin: (keycloak: Keycloak.KeycloakInstance) => void,
-  realm: string,
-  clientId: string,
-  mode: 'login-required' | 'check-sso' = LOGIN_REQUIRED,
-  defaultAuthEndpoint?: string,
-) {
-  const url = defaultAuthEndpoint || extractAuthEndpoint(window.location.host);
-  const keycloakInstance = Keycloak({ url, realm, clientId });
+export function authenticate(options: AuthenticateOptions) {
+  const mode = options.mode || LOGIN_REQUIRED;
+  const url = options.authEndpoint || extractAuthEndpoint(window.location.host);
+  const keycloakInstance = Keycloak({
+    url,
+    realm: options.realm,
+    clientId: options.clientId,
+  });
 
   setGlobalKeycloak(keycloakInstance);
   getGlobalKeycloak()
     .init({ onLoad: mode })
     .success(authenticated => {
       if (authenticated) {
-        onLogin(getGlobalKeycloak());
+        options.onLogin(getGlobalKeycloak());
       }
     });
 

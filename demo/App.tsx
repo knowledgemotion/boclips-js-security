@@ -5,15 +5,15 @@ import * as ReactDom from 'react-dom';
 import { authenticate } from '../src/authenticate';
 import { logout } from '../src/logout';
 
-authenticate(
-  () => {
+authenticate({
+  onLogin: () => {
     ReactDom.render(<Body />, document.getElementById('content'));
   },
-  'teachers',
-  'educators',
-  'login-required',
-  'https://login.testing-boclips.com/auth',
-);
+  realm: 'boclips',
+  clientId: 'js-security',
+  mode: 'login-required',
+  authEndpoint: 'https://login.testing-boclips.com/auth',
+});
 
 interface State {
   authWorks: boolean;
