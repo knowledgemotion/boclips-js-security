@@ -1,3 +1,5 @@
+import * as Keycloak from 'keycloak-js';
+
 export interface AuthenticateOptions {
   onLogin: (keycloak: Keycloak.KeycloakInstance) => void;
   realm: string;
