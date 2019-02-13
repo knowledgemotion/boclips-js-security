@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
-    "keycloak-js": "4.5.0"
+    "keycloak-js": "4.8.3"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
