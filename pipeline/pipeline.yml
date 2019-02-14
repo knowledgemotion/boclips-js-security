@@ -12,6 +12,9 @@ jobs:
       bump: patch
   - task: build
     file: source/pipeline/build.yml
+    params:
+      CYPRESS_USERNAME: {{cypress-username}}
+      CYPRESS_PASSWORD: {{cypress-password}}
   - put: npm-registry
     params:
       username: {{npm-username}}

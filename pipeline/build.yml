@@ -16,3 +16,7 @@ outputs:
 
 run:
   path: source/pipeline/build.sh
+
+params:
+  CYPRESS_USERNAME:
+  CYPRESS_PASSWORD:

@@ -12,3 +12,5 @@ fly --target ci \
     --var versions-repo-key="$(lpass show concourse-versions-repo-key --notes)" \
     --var npm-username="$(lpass show npmjs --username)" \
     --var npm-password="$(lpass show npmjs --password)" \
+    --var cypress-username="$(lpass show e2e-admin-testing --username)" \
+    --var cypress-password="$(lpass show e2e-admin-testing --password)" \

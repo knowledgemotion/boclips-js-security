@@ -4,9 +4,6 @@ set -e
 npm run demo &
 demo_webserver_pid=$!
 
-export CYPRESS_USERNAME="$(lpass show e2e-admin-testing --username)"
-export CYPRESS_PASSWORD="$(lpass show e2e-admin-testing --password)"
-
 cleanup() {
         echo "Killing webserver with pid: $demo_webserver_pid"
         kill "$demo_webserver_pid"
