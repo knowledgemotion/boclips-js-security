@@ -3,7 +3,7 @@
 git pull -r
 
 npm i
-npm audit fix
+npm audit
 npm run compile
 npm run build
 
