@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+set -e
 
 npm run demo &
 demo_webserver_pid=$!
 
-CYPRESS_TEACHERS_USERNAME="$(lpass show e2e-teachers-testing --username)"
-CYPRESS_TEACHERS_PASSWORD="$(lpass show e2e-teachers-testing --password)"
+export CYPRESS_USERNAME="$(lpass show e2e-admin-testing --username)"
+export CYPRESS_PASSWORD="$(lpass show e2e-admin-testing --password)"
 
 cleanup() {
         echo "Killing webserver with pid: $demo_webserver_pid"

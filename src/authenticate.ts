@@ -36,22 +36,25 @@ function addAxiosInterceptor(mode: 'login-required' | 'check-sso') {
   axios.interceptors.request.use(config => {
     const keycloakInstance = getGlobalKeycloak();
 
-    return keycloakInstance
-      .updateToken(5)
-      .then(() => {
-        if (isAuthenticated()) {
-          config.headers.Authorization = `Bearer ${keycloakInstance.token}`;
-        } else {
-          delete config.headers.Authorization;
-        }
-        return Promise.resolve(config);
-      })
-      .catch(() => {
-        if (mode === LOGIN_REQUIRED) {
-          keycloakInstance.login();
-        } else {
-          return Promise.resolve(config);
-        }
-      });
+    return new Promise(resolve => {
+      keycloakInstance
+        .updateToken(5)
+        .success(() => {
+          if (isAuthenticated()) {
+            config.headers.Authorization = `Bearer ${keycloakInstance.token}`;
+          } else {
+            delete config.headers.Authorization;
+          }
+          return resolve(config);
+        })
+        .error(() => {
+          if (mode === LOGIN_REQUIRED) {
+            keycloakInstance.login();
+          } else {
+            return resolve(config);
+          }
+        });
+    });
+
   });
 }

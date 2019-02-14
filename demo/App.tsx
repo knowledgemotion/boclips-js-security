@@ -10,7 +10,7 @@ authenticate({
     ReactDom.render(<Body />, document.getElementById('content'));
   },
   realm: 'boclips',
-  clientId: 'js-security',
+  clientId: 'teachers',
   mode: 'login-required',
   authEndpoint: 'https://login.testing-boclips.com/auth',
 });
@@ -43,9 +43,9 @@ class Body extends Component<{}, State> {
 
   public componentWillMount() {
     axios
-      .get('https://video-service.testing-boclips.com/v1/videos')
+      .get('https://api.testing-boclips.com/v1/videos?query=hi')
       .then(() => {
         this.setState({ authWorks: true });
-      });
+      }).catch((e) => console.error(e));
   }
 }

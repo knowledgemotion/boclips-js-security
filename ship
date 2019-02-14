@@ -7,4 +7,6 @@ npm audit fix
 npm run compile
 npm run build
 
+./run_e2e
+
 git push

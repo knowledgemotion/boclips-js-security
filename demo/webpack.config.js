@@ -14,6 +14,7 @@ module.exports = {
   },
   devServer: {
     contentBase: distPath,
+    port: 8081,
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
