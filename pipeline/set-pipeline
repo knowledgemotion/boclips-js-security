@@ -3,6 +3,7 @@
 set -eu
 
 cwd="$(cd "$(dirname $0)" && pwd)"
+gcs_key="$(lpass show concourse-gcs-service-account-key --notes)"
 
 fly --target ci \
     set-pipeline \
@@ -14,3 +15,5 @@ fly --target ci \
     --var npm-password="$(lpass show npmjs --password)" \
     --var cypress-username="$(lpass show e2e-admin-testing --username)" \
     --var cypress-password="$(lpass show e2e-admin-testing --password)" \
+    --var gcs-key="$gcs_key"
+

@@ -15,6 +15,11 @@ jobs:
     params:
       CYPRESS_USERNAME: {{cypress-username}}
       CYPRESS_PASSWORD: {{cypress-password}}
+    on_failure:
+      put: test-results
+      params:
+        file: test-results/results.tar
+        predefined_acl: projectPrivate
   - put: npm-registry
     params:
       username: {{npm-username}}
@@ -45,8 +50,21 @@ resources:
   source:
     package_name: boclips-js-security
 
+- name: test-results
+  type: gcs
+  source:
+    bucket: boclips-test-results
+    json_key: {{gcs-key}}
+    versioned_file: "backoffice/results.tar"
+
 resource_types:
 - name: npm-resource
   type: docker-image
   source:
     repository: idahobean/npm-resource
+
+- name: gcs
+  type: docker-image
+  source:
+    repository: frodenas/gcs-resource
+    tag: "v0.3.0"
