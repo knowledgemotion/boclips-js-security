@@ -6,7 +6,7 @@ produce_output () {
     mkdir -p source/e2e/result/{screenshots,videos}
     touch source/e2e/result/{screenshots,videos}/tar-avoid-empty-dir
     cd "source/e2e/result" || exit
-    tar -cf ../../test-results/results.tar \
+    tar -cf ../../../test-results/results.tar \
         screenshots/* \
         videos/*
 }
