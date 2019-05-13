@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
-    "keycloak-js": "4.8.3"
+    "keycloak-js": "6.0.1"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
@@ -27,7 +27,7 @@
     "cypress": "^3.1.5",
     "file-loader": "^2.0.0",
     "html-webpack-plugin": "^3.2.0",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.1",
     "ts-jest": "^23.10.5",
