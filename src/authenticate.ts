@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as Keycloak from 'keycloak-js';
-import extractAuthEndpoint from './helpers/extractAuthEndpoint';
+import extractEndpoint from './extractEndpoint';
 import getGlobalKeycloak from './helpers/getGlobalKeycloak';
 import setGlobalKeycloak from './helpers/setGlobalKeycloak';
 import { AuthenticateOptions } from './AuthenticateOptions';
@@ -9,7 +9,7 @@ const LOGIN_REQUIRED = 'login-required';
 
 export function authenticate(options: AuthenticateOptions) {
   const mode = options.mode || LOGIN_REQUIRED;
-  const url = options.authEndpoint || extractAuthEndpoint(window.location.host);
+  const url = options.authEndpoint || extractEndpoint(window.location.host) + '/auth';
   const keycloakInstance = Keycloak({
     url,
     realm: options.realm,
