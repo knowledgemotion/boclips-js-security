@@ -2,18 +2,19 @@
 
 set -eu
 
-cwd="$(cd "$(dirname $0)" && pwd)"
+cwd="$(cd "$(dirname "$0")" && pwd)"
 gcs_key="$(lpass show concourse-gcs-service-account-key --notes)"
+github_access_token="$(lpass show boclips-js-security-github-access-token --notes)"
 
 fly --target ci \
     set-pipeline \
     --pipeline boclips-js-security \
-    --config $cwd/pipeline.yml \
+    --config "$cwd/pipeline.yml" \
     --var boclips-js-security-repo-key="$(lpass show concourse-boclips-js-security-repo-key --notes)" \
     --var versions-repo-key="$(lpass show concourse-versions-repo-key --notes)" \
     --var npm-username="$(lpass show npmjs --username)" \
     --var npm-password="$(lpass show npmjs --password)" \
     --var cypress-username="$(lpass show e2e-admin-testing --username)" \
     --var cypress-password="$(lpass show e2e-admin-testing --password)" \
+    --var github-access-token="$github_access_token" \
     --var gcs-key="$gcs_key"
-

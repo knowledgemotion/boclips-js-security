@@ -1,38 +1,106 @@
 ---
+groups:
+- name: all
+  jobs:
+  - test
+  - pre-release
+  - major
+  - minor
+  - release
+- name: develop
+  jobs:
+  - test
+  - pre-release
+- name: release
+  jobs:
+  - major
+  - minor
+  - release
+
 jobs:
-- name: build-and-publish
-  public: true
+- name: test
   plan:
+  - get: once-per-weekday
+    trigger: true
   - get: source
     trigger: true
+  - task: test
+    file: source/pipeline/test.yml
     params:
-      depth: 1
-  - put: version
-    params:
-      bump: patch
-  - task: build
-    file: source/pipeline/build.yml
-    params:
-      CYPRESS_USERNAME: {{cypress-username}}
-      CYPRESS_PASSWORD: {{cypress-password}}
+      CYPRESS_USERNAME: ((cypress-username))
+      CYPRESS_PASSWORD: ((cypress-password))
     on_failure:
       put: test-results
       params:
         file: test-results/results.tar
         predefined_acl: projectPrivate
+
+- name: pre-release
+  plan:
+  - get: source
+    passed: [test]
+    trigger: true
+  - put: version
+    params:
+      pre: dev
+  - task: release
+    file: source/pipeline/release.yml
   - put: npm-registry
     params:
-      username: {{npm-username}}
-      password: {{npm-password}}
+      username: ((npm-username))
+      password: ((npm-password))
       email: engineering@boclips.com
       path: dist
+      tag: dev
+  - put: version
+    params:
+      file: version/version
+
+- name: major
+  plan:
+  - put: version
+    params:
+      bump: major
+      pre: dev
+
+- name: minor
+  plan:
+  - put: version
+    params:
+      bump: minor
+      pre: dev
+
+- name: release
+  plan:
+  - get: source
+    passed: [pre-release]
+  - get: version
+    params:
+      bump: final
+  - task: release
+    file: source/pipeline/release.yml
+  - put: npm-registry
+    params:
+      username: ((npm-username))
+      password: ((npm-password))
+      email: engineering@boclips.com
+      path: dist
+  - put: github-release
+    params:
+      name: release/name
+      tag: release/name
+      body: release/notes
+      commitish: source/.git/ref
+  - put: version
+    params:
+      bump: patch
 
 resources:
 - name: source
   type: git
   source:
     branch: master
-    private_key: {{boclips-js-security-repo-key}}
+    private_key: ((boclips-js-security-repo-key))
     uri: git@github.com:knowledgemotion/boclips-js-security.git
 
 - name: version
@@ -43,7 +111,7 @@ resources:
     uri: git@github.com:knowledgemotion/versions.git
     branch: master
     file: boclips-js-security
-    private_key: {{versions-repo-key}}
+    private_key: ((versions-repo-key))
 
 - name: npm-registry
   type: npm-resource
@@ -54,8 +122,23 @@ resources:
   type: gcs
   source:
     bucket: boclips-test-results
-    json_key: {{gcs-key}}
-    versioned_file: "backoffice/results.tar"
+    json_key: ((gcs-key))
+    versioned_file: "boclips-js-security/results.tar"
+
+- name: once-per-weekday
+  type: time
+  source:
+    start: "08:30"
+    stop: "20:00"
+    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+    location: Europe/London
+
+- name: github-release
+  type: github-release
+  source:
+    owner: boclips
+    repository: boclips-js-security
+    access_token: ((github-access-token))
 
 resource_types:
 - name: npm-resource
