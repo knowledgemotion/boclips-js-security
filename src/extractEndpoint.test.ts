@@ -18,14 +18,14 @@ test('extracts login endpoint for production', () => {
   );
 });
 
-test('localhost defaults to testing', () => {
+test('localhost becomes staging, so we can develop against staging', () => {
   expect(extractEndpoint('localhost:123123', 'login')).toEqual(
-    'https://login.testing-boclips.com',
+    'https://login.staging-boclips.com',
   );
 });
 
-test('anything defaults to testing', () => {
+test('defaults to staging, so we can develop against staging', () => {
   expect(extractEndpoint('123_garbage', 'hello')).toEqual(
-    'https://hello.testing-boclips.com',
+    'https://hello.staging-boclips.com',
   );
 });

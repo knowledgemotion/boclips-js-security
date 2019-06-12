@@ -2,7 +2,7 @@ export function extractEndpoint(url: string, subdomain: string): string {
   const parts = url.split('.');
   const domain = isDomainName(parts)
     ? buildEndpoint(parts)
-    : 'testing-boclips.com';
+    : 'staging-boclips.com';
 
   return `https://${subdomain}.${domain}`;
 }
