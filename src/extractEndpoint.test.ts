@@ -24,6 +24,18 @@ test('localhost becomes staging, so we can develop against staging', () => {
   );
 });
 
+test('0.0.0.0 becomes staging, so we can develop against staging', () => {
+  expect(extractEndpoint('0.0.0.0', 'hello')).toEqual(
+    'https://hello.staging-boclips.com',
+  );
+});
+
+test('127.0.0.1 becomes staging, so we can develop against staging', () => {
+  expect(extractEndpoint('127.0.0.1', 'hello')).toEqual(
+    'https://hello.staging-boclips.com',
+  );
+});
+
 test('defaults to staging, so we can develop against staging', () => {
   expect(extractEndpoint('123_garbage', 'hello')).toEqual(
     'https://hello.staging-boclips.com',
