@@ -11,7 +11,6 @@ fly --target ci \
     --pipeline boclips-js-security \
     --config "$cwd/pipeline.yml" \
     --var boclips-js-security-repo-key="$(lpass show concourse-boclips-js-security-repo-key --notes)" \
-    --var versions-repo-key="$(lpass show concourse-versions-repo-key --notes)" \
     --var npm-username="$(lpass show npmjs --username)" \
     --var npm-password="$(lpass show npmjs --password)" \
     --var cypress-username="$(lpass show e2e-frontend-testing --username)" \

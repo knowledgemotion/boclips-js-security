@@ -111,7 +111,7 @@ resources:
     uri: git@github.com:knowledgemotion/versions.git
     branch: master
     file: boclips-js-security
-    private_key: ((versions-repo-key))
+    private_key: ((versions.repo-key))
 
 - name: npm-registry
   type: npm-resource
