@@ -36,6 +36,7 @@ function createAccount(username, password) {
   cy.get('[data-qa="password-confirm"]').type(password);
   cy.get('[data-qa="privacy-policy"]').click();
   cy.get('[data-qa="register-button"]').click();
+  cy.get('h1.big-title');
 }
 
 function logIn(username, password) {
