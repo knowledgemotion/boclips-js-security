@@ -17,7 +17,8 @@ export function authenticate(options: AuthenticateOptions) {
   });
 
   setGlobalKeycloak(keycloakInstance);
-  getGlobalKeycloak()
+
+  keycloakInstance
     .init({ onLoad: mode })
     .success(authenticated => {
       if (authenticated) {
@@ -28,8 +29,8 @@ export function authenticate(options: AuthenticateOptions) {
   addAxiosInterceptor(mode);
 }
 
-export function isAuthenticated() {
-  return getGlobalKeycloak().authenticated && getGlobalKeycloak().token;
+export function isAuthenticated(): boolean {
+  return !!(getGlobalKeycloak().authenticated && getGlobalKeycloak().token);
 }
 
 function addAxiosInterceptor(mode: 'login-required' | 'check-sso') {
@@ -40,11 +41,8 @@ function addAxiosInterceptor(mode: 'login-required' | 'check-sso') {
       keycloakInstance
         .updateToken(5)
         .success(() => {
-          if (isAuthenticated()) {
-            config.headers.Authorization = `Bearer ${keycloakInstance.token}`;
-          } else {
-            delete config.headers.Authorization;
-          }
+          config.headers.Authorization = `Bearer ${keycloakInstance.token}`;
+
           return resolve(config);
         })
         .error(() => {
