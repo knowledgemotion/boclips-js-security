@@ -3,14 +3,8 @@
 set -eu
 
 cwd="$(cd "$(dirname "$0")" && pwd)"
-gcs_key="$(lpass show concourse-gcs-service-account-key --notes)"
-github_access_token="$(lpass show boclips-js-security-github-access-token --notes)"
 
 fly --target ci \
     set-pipeline \
     --pipeline boclips-js-security \
-    --config "$cwd/pipeline.yml" \
-    --var npm-username="$(lpass show npmjs --username)" \
-    --var npm-password="$(lpass show npmjs --password)" \
-    --var github-access-token="$github_access_token" \
-    --var gcs-key="$gcs_key"
+    --config "$cwd/pipeline.yml"

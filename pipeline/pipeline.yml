@@ -44,8 +44,8 @@ jobs:
     file: source/pipeline/release.yml
   - put: npm-registry
     params:
-      username: ((npm-username))
-      password: ((npm-password))
+      username: ((npm.username))
+      password: ((npm.password))
       email: engineering@boclips.com
       path: dist
       tag: dev
@@ -78,8 +78,8 @@ jobs:
     file: source/pipeline/release.yml
   - put: npm-registry
     params:
-      username: ((npm-username))
-      password: ((npm-password))
+      username: ((npm.username))
+      password: ((npm.password))
       email: engineering@boclips.com
       path: dist
   - put: github-release
@@ -119,7 +119,7 @@ resources:
   type: gcs
   source:
     bucket: boclips-test-results
-    json_key: ((gcs-key))
+    json_key: ((gcs.key))
     versioned_file: "boclips-js-security/results.tar"
 
 - name: once-per-weekday
@@ -135,7 +135,7 @@ resources:
   source:
     owner: boclips
     repository: boclips-js-security
-    access_token: ((github-access-token))
+    access_token: ((github.access-token))
 
 resource_types:
 - name: npm-resource
