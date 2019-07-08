@@ -97,7 +97,7 @@ resources:
   type: git
   source:
     branch: master
-    private_key: ((boclips-js-security.repo-key))
+    private_key: ((source.repo-key))
     uri: git@github.com:knowledgemotion/boclips-js-security.git
 
 - name: version
