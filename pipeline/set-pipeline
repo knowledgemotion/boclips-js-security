@@ -13,7 +13,5 @@ fly --target ci \
     --var boclips-js-security-repo-key="$(lpass show concourse-boclips-js-security-repo-key --notes)" \
     --var npm-username="$(lpass show npmjs --username)" \
     --var npm-password="$(lpass show npmjs --password)" \
-    --var cypress-username="$(lpass show e2e-frontend-testing --username)" \
-    --var cypress-password="$(lpass show e2e-frontend-testing --password)" \
     --var github-access-token="$github_access_token" \
     --var gcs-key="$gcs_key"
