@@ -3,6 +3,8 @@ All notable manual upgrade steps are listed in this file.
 
 ## [Unreleased]
 
+## [2.0.0 to 3.0.0]
+
 ### Simplified `BoclipsSecurity` Exports
 
 In order to provide an easier to consume API, the following have now been merged into a single module that provides singleton behaviour without mutating the global state of the application.
