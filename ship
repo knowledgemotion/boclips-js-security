@@ -8,6 +8,7 @@ npm i
 npm audit
 npm run compile
 npm run build
+npm run test
 
 ./run_e2e
 
