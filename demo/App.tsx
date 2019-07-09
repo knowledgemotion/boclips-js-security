@@ -2,38 +2,25 @@ import axios from 'axios';
 import * as React from 'react';
 import { Component } from 'react';
 import * as ReactDom from 'react-dom';
-import { authenticate } from '../src/authenticate';
-import { logout } from '../src/logout';
+import BoclipsSecurity, { AuthenticateOptions } from '../src/BoclipsSecurity';
 
-authenticate({
-  onLogin: () => {
-    ReactDom.render(<Body />, document.getElementById('content'));
-  },
-  realm: 'boclips',
-  clientId: 'teachers',
-  mode: 'login-required',
-  authEndpoint: 'https://login.testing-boclips.com/auth',
-});
-
-interface State {
-  authWorks: boolean;
-}
-
-class Body extends Component<{}, State> {
+class Demo extends Component {
   constructor(props) {
     super(props);
-    this.state = { authWorks: false };
+    security.configureAxios();
   }
 
   public render(): React.ReactNode {
     return (
-      this.state.authWorks && (
+      security.isAuthenticated() && (
         <section>
           <div>
             <strong>WORKS</strong>
           </div>
           <br />
-          <button id="logout" onClick={() => logout()}>
+          <button id="logout" onClick={() => security.logout({
+            redirectUri: window.location.href
+          })}>
             LOGOUT
           </button>
         </section>
@@ -44,8 +31,19 @@ class Body extends Component<{}, State> {
   public componentWillMount() {
     axios
       .get('https://api.testing-boclips.com/v1/videos?query=hi')
-      .then(() => {
-        this.setState({ authWorks: true });
-      }).catch((e) => console.error(e));
+      .then(console.log)
+      .catch(console.error);
   }
 }
+
+const authOptions: AuthenticateOptions = {
+  realm: 'boclips',
+  clientId: 'teachers',
+  mode: 'login-required',
+  authEndpoint: 'https://login.testing-boclips.com/auth',
+  onLogin: () => {
+    ReactDom.render(<Demo />, document.getElementById('content'));
+  },
+};
+
+const security = BoclipsSecurity.createInstance(authOptions);

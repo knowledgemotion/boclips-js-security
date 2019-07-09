@@ -1,5 +1,1 @@
-import { authenticate } from './src/authenticate';
-import { logout } from './src/logout';
-import { extractEndpoint } from "./src/extractEndpoint";
-
-export { authenticate, extractEndpoint, logout };
+export { BoclipsSecurity } from './src/BoclipsSecurity';
