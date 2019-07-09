@@ -121,14 +121,30 @@ describe('isAuthenticated', () => {
 });
 
 describe('axios interceptor', () => {
+  it('does not install axios if passed false in constructor', () => {
+    new BoclipsKeycloakSecurity({} as any, false);
+
+    expect(axios.interceptors.request.use).not.toHaveBeenCalled();
+  });
+
+  it('does install axios if passed false in constructor but configureAxios is called', () => {
+    const instance = new BoclipsKeycloakSecurity({} as any, false);
+
+    expect(axios.interceptors.request.use).not.toHaveBeenCalled();
+
+    instance.configureAxios();
+
+    expect(axios.interceptors.request.use).toHaveBeenCalled();
+  });
+
   it('can install an axios interceptor', () => {
     const options: Partial<AuthenticateOptions> = {
       mode: 'check-sso',
     };
-    const instance = new BoclipsKeycloakSecurity(
+
+    new BoclipsKeycloakSecurity(
       options as AuthenticateOptions,
     );
-    instance.configureAxios();
 
     expect(axios.interceptors.request.use).toHaveBeenCalled();
   });
@@ -149,7 +165,6 @@ describe('axios interceptor', () => {
 
       keycloakInstance = instance.getKeycloakInstance();
       keycloakInstance.token = 'test-token-123';
-      instance.configureAxios();
 
       const interceptor = mocked(axios.interceptors.request.use).mock
         .calls[0][0] as any;
@@ -193,7 +208,6 @@ describe('axios interceptor', () => {
     );
     const keycloakInstance = instance.getKeycloakInstance();
     keycloakInstance.token = 'test-token-123';
-    instance.configureAxios();
 
     const interceptor = mocked(axios.interceptors.request.use).mock
       .calls[0][0] as any;
