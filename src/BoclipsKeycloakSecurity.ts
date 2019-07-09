@@ -13,7 +13,10 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
   private readonly keycloakInstance: Keycloak.KeycloakInstance = null;
   private readonly mode: AuthenticateOptions['mode'];
 
-  public constructor(options: AuthenticateOptions, configureAxios: boolean = true) {
+  public constructor(
+    options: AuthenticateOptions,
+    configureAxios: boolean = true,
+  ) {
     this.mode = options.mode || LOGIN_REQUIRED;
     const url =
       options.authEndpoint ||
@@ -45,12 +48,18 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
   public configureAxios = () => {
     const tokenFactory = this.getTokenFactory(5);
 
-    axios.interceptors.request.use(async config => {
-      const token = await tokenFactory();
+    axios.interceptors.request.use(config => {
+      return new Promise(resolve => {
+        tokenFactory()
+          .then(token => {
+            config.headers.Authorization = `Bearer ${token}`;
 
-      config.headers.Authorization = `Bearer ${token}`;
-
-      return config;
+            resolve(config);
+          })
+          .catch(() => {
+            resolve(config);
+          });
+      });
     });
   };
 
@@ -69,6 +78,7 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
           if (this.mode === LOGIN_REQUIRED) {
             this.keycloakInstance.login();
           }
+
           reject(false);
         });
     });

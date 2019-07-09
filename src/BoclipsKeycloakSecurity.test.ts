@@ -142,9 +142,7 @@ describe('axios interceptor', () => {
       mode: 'check-sso',
     };
 
-    new BoclipsKeycloakSecurity(
-      options as AuthenticateOptions,
-    );
+    new BoclipsKeycloakSecurity(options as AuthenticateOptions);
 
     expect(axios.interceptors.request.use).toHaveBeenCalled();
   });
@@ -194,7 +192,9 @@ describe('axios interceptor', () => {
 
       expect(keycloakInstance.login).toHaveBeenCalled();
 
-      return expect(interceptorPromise).rejects.toEqual(false);
+      return expect(interceptorPromise).resolves.toEqual({
+        headers: {},
+      });
     });
   });
 
@@ -212,9 +212,11 @@ describe('axios interceptor', () => {
     const interceptor = mocked(axios.interceptors.request.use).mock
       .calls[0][0] as any;
 
-    const interceptorPromise = interceptor({
+    const originalConfig = {
       headers: { Authorization: 'expired-token' },
-    });
+    };
+
+    const interceptorPromise = interceptor(originalConfig);
 
     let updateTokenPromise = mocked(keycloakInstance.updateToken).mock
       .results[0].value;
@@ -223,7 +225,7 @@ describe('axios interceptor', () => {
 
     errorCallback();
 
-    return expect(interceptorPromise).rejects.toEqual(false);
+    return expect(interceptorPromise).resolves.toEqual(originalConfig);
   });
 });
 
