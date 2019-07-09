@@ -5,11 +5,6 @@ import * as ReactDom from 'react-dom';
 import BoclipsSecurity, { AuthenticateOptions } from '../src/BoclipsSecurity';
 
 class Demo extends Component {
-  constructor(props) {
-    super(props);
-    security.configureAxios();
-  }
-
   public render(): React.ReactNode {
     return (
       security.isAuthenticated() && (

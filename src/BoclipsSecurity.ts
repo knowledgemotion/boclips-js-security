@@ -24,8 +24,8 @@ let instance = null;
 
 export default {
   getInstance: (): BoclipsSecurity => instance,
-  createInstance: (options: AuthenticateOptions): BoclipsSecurity => {
-    instance = new BoclipsKeycloakSecurity(options);
+  createInstance: (options: AuthenticateOptions, configureAxios: boolean = true): BoclipsSecurity => {
+    instance = new BoclipsKeycloakSecurity(options, configureAxios);
     return instance;
   },
 };
