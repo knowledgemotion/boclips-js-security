@@ -9,7 +9,7 @@
     "test:watch": "npm run test -- --watch",
     "lint": "tslint -c tslint.json -p . --fix",
     "build": "tsc",
-    "compile": "tsc -p . --noEmit",
+    "compile": "tsc -p tsconfig.all.json --noEmit",
     "demo": "./node_modules/.bin/webpack-dev-server --config demo/webpack.config.js",
     "e2e": "$(npm bin)/cypress open",
     "e2e:ci": "$(npm bin)/cypress run"
