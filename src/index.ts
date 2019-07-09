@@ -1,1 +1,3 @@
-export { BoclipsSecurity } from './BoclipsSecurity';
+import BoclipsSecurity from './BoclipsSecurity';
+
+export default BoclipsSecurity;
