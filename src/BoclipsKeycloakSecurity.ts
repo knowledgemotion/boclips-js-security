@@ -48,18 +48,16 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
   public configureAxios = () => {
     const tokenFactory = this.getTokenFactory(5);
 
-    axios.interceptors.request.use(config => {
-      return new Promise(resolve => {
-        tokenFactory()
-          .then(token => {
-            config.headers.Authorization = `Bearer ${token}`;
+    axios.interceptors.request.use(async config => {
+      try {
+        const token = await tokenFactory();
 
-            resolve(config);
-          })
-          .catch(() => {
-            resolve(config);
-          });
-      });
+        config.headers.Authorization = `Bearer ${token}`;
+      } catch (error) {
+        console.warn('Caught error getting fresh token.');
+      }
+
+      return config;
     });
   };
 
@@ -67,8 +65,8 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
     this.keycloakInstance.logout(options);
   };
 
-  public getTokenFactory = (minValidity: number) => () => {
-    return new Promise<string>((resolve, reject) => {
+  public getTokenFactory = (minValidity: number) => () =>
+    new Promise<string>((resolve, reject) => {
       this.keycloakInstance
         .updateToken(minValidity)
         .success(() => {
@@ -82,7 +80,6 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
           reject(false);
         });
     });
-  };
 
   public getKeycloakInstance = () => this.keycloakInstance;
 }
