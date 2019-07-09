@@ -12,5 +12,6 @@ const Promise = () => {
 module.exports = jest.fn().mockReturnValue({
   init: jest.fn().mockReturnValue(Promise()),
   updateToken: jest.fn().mockReturnValue(Promise()),
-  login: jest.fn()
+  login: jest.fn(),
+  logout: jest.fn()
 });

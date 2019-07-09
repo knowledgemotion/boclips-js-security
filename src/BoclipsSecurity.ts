@@ -1,0 +1,31 @@
+import * as Keycloak from 'keycloak-js';
+import { BoclipsKeycloakSecurity } from './BoclipsKeycloakSecurity';
+
+export interface AuthenticateOptions {
+  onLogin: (keycloak: Keycloak.KeycloakInstance) => void;
+  realm: string;
+  clientId: string;
+  mode?: 'login-required' | 'check-sso';
+  authEndpoint?: string;
+}
+
+export interface LogoutOptions {
+  redirectUri: string;
+}
+
+export interface BoclipsSecurity {
+  isAuthenticated: () => boolean;
+  logout: (options: LogoutOptions) => void;
+  getTokenFactory: (validityTime: number) => () => Promise<string>;
+  configureAxios: () => void;
+}
+
+let instance = null;
+
+export default {
+  getInstance: (): BoclipsSecurity => instance,
+  createInstance: (options: AuthenticateOptions): BoclipsSecurity => {
+    instance = new BoclipsKeycloakSecurity(options);
+    return instance;
+  },
+};
