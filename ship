@@ -5,7 +5,7 @@ set -e
 git pull -r
 
 npm i
-npm audit
+npm run audit-ci
 npm run compile
 npm run build
 npm run test

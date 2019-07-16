@@ -1,0 +1,5 @@
+{
+  "high": true,
+  "advisories": ["1065"],
+  "whitelist": ["cypress"]
+}
