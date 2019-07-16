@@ -14,6 +14,7 @@ trap produce_output EXIT
 
 (
 cd source
+npm install
 npm run audit-ci
 npm ci
 npm run test
