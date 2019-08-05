@@ -1,4 +1,5 @@
 {
+  "baseUrl": "http://localhost:8081",
   "integrationFolder": "e2e/tests",
   "screenshotsFolder": "e2e/result/screenshots",
   "videosFolder": "e2e/result/videos",

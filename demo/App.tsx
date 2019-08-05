@@ -25,17 +25,17 @@ class Demo extends Component {
 
   public componentWillMount() {
     axios
-      .get('https://api.testing-boclips.com/v1/videos?query=hi')
+      .get('https://api.boclips.com/v1/videos?query=hi')
       .then(console.log)
       .catch(console.error);
   }
 }
 
 const authOptions: AuthenticateOptions = {
-  realm: 'boclips',
-  clientId: 'teachers',
+  realm: 'boclips-js-security-test',
+  clientId: 'boclips-js-security-test',
   mode: 'login-required',
-  authEndpoint: 'https://login.testing-boclips.com/auth',
+  authEndpoint: 'https://login.boclips.com/auth',
   onLogin: () => {
     ReactDom.render(<Demo />, document.getElementById('content'));
   },

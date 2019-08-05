@@ -17,6 +17,10 @@ outputs:
 run:
   path: source/pipeline/test.sh
 
+params:
+  CYPRESS_USERNAME:
+  CYPRESS_PASSWORD:
+
 caches:
 - path: ../../../root/.cache
 - path: ../../../root/.npm

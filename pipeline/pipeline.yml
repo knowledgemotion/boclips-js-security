@@ -26,6 +26,9 @@ jobs:
     trigger: true
   - task: test
     file: source/pipeline/test.yml
+    params:
+      CYPRESS_USERNAME: ((test.username))
+      CYPRESS_PASSWORD: ((test.password))
     on_failure:
       put: test-results
       params:

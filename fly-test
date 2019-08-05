@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 cwd="$(cd "$(dirname "$0")" && pwd)"
 dir=$(mktemp -d -t fly-build-boclips-js-security.XXXXX)
 
@@ -8,6 +10,12 @@ tidy () {
 }
 
 trap tidy EXIT
+
+CYPRESS_USERNAME="$(get-k8s-concourse-secret boclips-js-security test username)"
+CYPRESS_PASSWORD="$(get-k8s-concourse-secret boclips-js-security test password)"
+
+export CYPRESS_USERNAME
+export CYPRESS_PASSWORD
 
 fly --target ci execute \
     --input source="$cwd" \

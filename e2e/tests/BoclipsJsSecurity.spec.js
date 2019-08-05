@@ -2,11 +2,8 @@ import uuid from 'uuid/v4';
 
 describe('Login journey', function() {
   it('Creates account, logs in, and logs out', function() {
-    const username = `${uuid()}@boclips.com`;
-    const password = uuid();
-
-    cy.visit('http://localhost:8081').debug();
-    createAccount(username, password);
+    const username = Cypress.env('USERNAME');
+    const password = Cypress.env('PASSWORD');
 
     cy.visit('http://localhost:8081').debug();
     logIn(username, password);
@@ -26,18 +23,6 @@ describe('Login journey', function() {
       .should('not.be.empty');
   });
 });
-
-function createAccount(username, password) {
-  cy.get('[data-qa="create-account"]').click();
-  cy.get('[data-qa="first-name"]').type('test');
-  cy.get('[data-qa="last-name"]').type('test');
-  cy.get('[data-qa="email"]').type(username);
-  cy.get('[data-qa="password"]').type(password);
-  cy.get('[data-qa="password-confirm"]').type(password);
-  cy.get('[data-qa="privacy-policy"]').click();
-  cy.get('[data-qa="register-button"]').click();
-  cy.get('h1.big-title');
-}
 
 function logIn(username, password) {
   cy.get('#username').type(username);
