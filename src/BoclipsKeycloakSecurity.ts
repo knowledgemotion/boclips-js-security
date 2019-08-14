@@ -28,11 +28,20 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
       clientId: options.clientId,
     });
 
-    this.keycloakInstance.init({ onLoad: this.mode }).success(authenticated => {
-      if (authenticated) {
-        options.onLogin(this.keycloakInstance);
-      }
-    });
+    this.keycloakInstance
+      .init({ onLoad: this.mode })
+      .success(authenticated => {
+        if (authenticated) {
+          options.onLogin(this.keycloakInstance);
+        } else {
+          options.onFailure && options.onFailure();
+        }
+      })
+      .error(error => {
+        console.error('An error occurred trying to login', error);
+
+        options.onFailure && options.onFailure();
+      });
 
     if (configureAxios) {
       this.configureAxios();

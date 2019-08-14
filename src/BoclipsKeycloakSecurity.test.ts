@@ -53,8 +53,9 @@ describe('authenticate', () => {
     });
   });
 
-  describe('it takes an onLogin function', () => {
+  describe('onLogin callback', () => {
     let authenticatedSuccess = null;
+    let authenticationError = null;
     let options: AuthenticateOptions;
     let keycloakInstance = null;
 
@@ -68,6 +69,7 @@ describe('authenticate', () => {
 
       const initPromise = keycloakInstance.init.mock.results[0].value;
       authenticatedSuccess = initPromise.success.mock.calls[0][0];
+      authenticationError = initPromise.error.mock.calls[0][0];
     });
 
     it('calls the onLogin function once authentication has succeeded', () => {
@@ -75,9 +77,56 @@ describe('authenticate', () => {
       expect(options.onLogin).toHaveBeenCalledWith(keycloakInstance);
     });
 
-    it(' does not call the onLogin function if authentication fails', () => {
+    it('does not call the onLogin function if authentication fails', () => {
       authenticatedSuccess(false);
       expect(options.onLogin).not.toHaveBeenCalledWith(keycloakInstance);
+    });
+
+    it('does not call onLogin if an error occurs', () => {
+      authenticationError({
+        error: 'An error occurred',
+        error_description: 'Some error description',
+      });
+      expect(options.onLogin).not.toHaveBeenCalledWith(keycloakInstance);
+    });
+  });
+
+  describe('onFailure callback', () => {
+    let authenticatedSuccess = null;
+    let authenticationError = null;
+    let options: AuthenticateOptions;
+    let keycloakInstance = null;
+
+    beforeEach(() => {
+      options = {
+        onFailure: jest.fn(),
+        onLogin: jest.fn(),
+      } as any;
+      const instance = new BoclipsKeycloakSecurity(options);
+      keycloakInstance = instance.getKeycloakInstance();
+      expect(keycloakInstance.init).toHaveBeenCalled();
+
+      const initPromise = keycloakInstance.init.mock.results[0].value;
+      authenticatedSuccess = initPromise.success.mock.calls[0][0];
+      authenticationError = initPromise.error.mock.calls[0][0];
+    });
+
+    it('calls the onFailure function if there was an error authenticating', () => {
+      authenticationError({
+        error: 'An error occurred',
+        error_description: 'Some error description',
+      });
+      expect(options.onFailure).toHaveBeenCalled();
+    });
+
+    it('does call the onFailure function if there was no error, but authentication failed', () => {
+      authenticatedSuccess(false);
+      expect(options.onFailure).toHaveBeenCalled();
+    });
+
+    it('does not call the onFailure function if authentication was successful', () => {
+      authenticatedSuccess(true);
+      expect(options.onFailure).not.toHaveBeenCalled();
     });
   });
 });

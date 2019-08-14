@@ -3,6 +3,7 @@ import { BoclipsKeycloakSecurity } from './BoclipsKeycloakSecurity';
 
 export interface AuthenticateOptions {
   onLogin: (keycloak: Keycloak.KeycloakInstance) => void;
+  onFailure?: () => void;
   realm: string;
   clientId: string;
   mode?: 'login-required' | 'check-sso';
