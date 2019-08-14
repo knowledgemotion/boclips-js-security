@@ -2,6 +2,9 @@
 
 set -e
 
+export CYPRESS_USERNAME="$(get-k8s-concourse-secret boclips-js-security test username)"
+export CYPRESS_PASSWORD="$(get-k8s-concourse-secret boclips-js-security test password)"
+
 git pull -r
 
 npm i
