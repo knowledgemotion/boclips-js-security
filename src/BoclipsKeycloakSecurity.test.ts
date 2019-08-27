@@ -293,6 +293,22 @@ describe('logout', () => {
   });
 });
 
+describe('ssoLogin', () => {
+  it('will call keycloak login with options', () => {
+    const instance = new BoclipsKeycloakSecurity({} as any);
+
+    const ssoLoginOptions = {
+      idpHint: 'google',
+      redirectUri: 'test-redirect/uri',
+    }
+
+    instance.ssoLogin(ssoLoginOptions);
+
+    const keycloakInstance = instance.getKeycloakInstance();
+    expect(keycloakInstance.login).toHaveBeenCalledWith(ssoLoginOptions);
+  });
+});
+
 describe('The tokenFactory', () => {
   it('will resolve a token, when keycloak has updated the token', () => {
     const instance = new BoclipsKeycloakSecurity({} as any);

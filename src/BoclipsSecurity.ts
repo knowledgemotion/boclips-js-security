@@ -14,11 +14,17 @@ export interface LogoutOptions {
   redirectUri: string;
 }
 
+export interface SsoLoginOptions {
+  idpHint: string;
+  redirectUri: string;
+}
+
 export interface BoclipsSecurity {
   isAuthenticated: () => boolean;
   logout: (options: LogoutOptions) => void;
   getTokenFactory: (validityTime: number) => () => Promise<string>;
   configureAxios: () => void;
+  ssoLogin: (options: SsoLoginOptions) => void;
 }
 
 let instance = null;

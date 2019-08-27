@@ -2,8 +2,8 @@ import axios from 'axios';
 import {
   AuthenticateOptions,
   BoclipsSecurity,
-  LogoutOptions,
-} from './BoclipsSecurity';
+  LogoutOptions, SsoLoginOptions
+} from "./BoclipsSecurity";
 import * as Keycloak from 'keycloak-js';
 import { extractEndpoint } from './extractEndpoint';
 
@@ -68,6 +68,10 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
 
       return config;
     });
+  };
+
+  public ssoLogin = (options: SsoLoginOptions) => {
+    this.keycloakInstance.login(options);
   };
 
   public logout = (options: LogoutOptions) => {
