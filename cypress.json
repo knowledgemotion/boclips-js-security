@@ -7,5 +7,6 @@
   "pluginsFile": "e2e/plugins",
   "supportFile": "e2e/support",
   "chromeWebSecurity": false,
-  "defaultCommandTimeout": 10000
+  "defaultCommandTimeout": 15000,
+  "requestTimeout": 15000
 }
