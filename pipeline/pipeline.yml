@@ -20,7 +20,7 @@ groups:
 jobs:
 - name: test
   plan:
-  - get: once-per-weekday
+  - get: office-hours-hourly
     trigger: true
   - get: source
     trigger: true
@@ -125,11 +125,12 @@ resources:
     json_key: ((gcs.key))
     versioned_file: "boclips-js-security/results.tar"
 
-- name: once-per-weekday
+- name: office-hours-hourly
   type: time
   source:
     start: "08:30"
     stop: "20:00"
+    interval: 1h
     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
     location: Europe/London
 
