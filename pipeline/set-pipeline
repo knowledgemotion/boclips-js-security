@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-echo "Removed: Use 'bo set pipeline <tab>' instead."
-exit 1
