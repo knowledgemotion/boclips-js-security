@@ -122,7 +122,7 @@ resources:
   type: gcs
   source:
     bucket: boclips-test-results
-    json_key: ((gcs.key))
+    json_key: ((test-results.google-storage-key))
     versioned_file: "boclips-js-security/results.tar"
 
 - name: office-hours-hourly
