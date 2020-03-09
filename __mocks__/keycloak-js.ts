@@ -1,10 +1,11 @@
 import { KeycloakPromise } from 'keycloak-js';
 
-const Promise = () => {
-  const promise = {} as KeycloakPromise<any, any>;
 
-  promise.success = jest.fn().mockReturnValue(promise);
-  promise.error = jest.fn().mockReturnValue(promise);
+const Promise = () => {
+  const promise = {} as Promise<any>;
+
+  promise.then = jest.fn().mockReturnValue(promise);
+  promise.catch = jest.fn().mockReturnValue(promise);
 
   return promise;
 };

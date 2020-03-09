@@ -10,7 +10,7 @@ import { extractEndpoint } from './extractEndpoint';
 const LOGIN_REQUIRED = 'login-required';
 
 export class BoclipsKeycloakSecurity implements BoclipsSecurity {
-  private readonly keycloakInstance: Keycloak.KeycloakInstance = null;
+  private readonly keycloakInstance: Keycloak.KeycloakInstance<'native'> = null;
   private readonly mode: AuthenticateOptions['mode'];
 
   public constructor(
@@ -22,22 +22,21 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
       options.authEndpoint ||
       extractEndpoint(window.location.host, 'login') + '/auth';
 
-    this.keycloakInstance = Keycloak({
+    this.keycloakInstance = Keycloak<'native'>({
       url,
       realm: options.realm,
       clientId: options.clientId,
     });
 
     this.keycloakInstance
-      .init({ onLoad: this.mode })
-      .success(authenticated => {
+      .init({ onLoad: this.mode, promiseType: 'native'})
+      .then(authenticated => {
         if (authenticated) {
           options.onLogin(this.keycloakInstance);
         } else {
           options.onFailure && options.onFailure();
         }
-      })
-      .error(error => {
+      }, error => {
         console.error('An error occurred trying to login', error);
 
         options.onFailure && options.onFailure();
@@ -82,16 +81,16 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
     new Promise<string>((resolve, reject) => {
       this.keycloakInstance
         .updateToken(minValidity)
-        .success(() => {
+        .then(() => {
           return resolve(this.keycloakInstance.token);
-        })
-        .error(() => {
+        },
+        _error => {
           if (this.mode === LOGIN_REQUIRED) {
             this.keycloakInstance.login();
           }
 
           reject(false);
-        });
+        })
     });
 
   public getKeycloakInstance = () => this.keycloakInstance;

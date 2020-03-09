@@ -29,6 +29,7 @@ describe('authenticate', () => {
 
     expect(keycloakInstance.init).toHaveBeenCalledWith({
       onLoad: options.mode,
+      promiseType: 'native',
     });
   });
 
@@ -50,6 +51,7 @@ describe('authenticate', () => {
     const keycloakInstance = instance.getKeycloakInstance();
     expect(keycloakInstance.init).toHaveBeenCalledWith({
       onLoad: 'login-required',
+      promiseType: 'native',
     });
   });
 
@@ -68,8 +70,8 @@ describe('authenticate', () => {
       expect(keycloakInstance.init).toHaveBeenCalled();
 
       const initPromise = keycloakInstance.init.mock.results[0].value;
-      authenticatedSuccess = initPromise.success.mock.calls[0][0];
-      authenticationError = initPromise.error.mock.calls[0][0];
+      authenticatedSuccess = initPromise.then.mock.calls[0][0];
+      authenticationError = initPromise.then.mock.calls[0][1];
     });
 
     it('calls the onLogin function once authentication has succeeded', () => {
@@ -107,8 +109,8 @@ describe('authenticate', () => {
       expect(keycloakInstance.init).toHaveBeenCalled();
 
       const initPromise = keycloakInstance.init.mock.results[0].value;
-      authenticatedSuccess = initPromise.success.mock.calls[0][0];
-      authenticationError = initPromise.error.mock.calls[0][0];
+      authenticatedSuccess = initPromise.then.mock.calls[0][0];
+      authenticationError = initPromise.then.mock.calls[0][1];
     });
 
     it('calls the onFailure function if there was an error authenticating', () => {
@@ -225,7 +227,7 @@ describe('axios interceptor', () => {
     });
 
     it('resolves config with authorization header when updateToken was successful', () => {
-      const successCallback = updateTokenPromise.success.mock.calls[0][0];
+      const successCallback = updateTokenPromise.then.mock.calls[0][0];
 
       successCallback();
 
@@ -235,7 +237,7 @@ describe('axios interceptor', () => {
     });
 
     it('calls the keycloak.login function when updateToken failed', () => {
-      const errorCallback = updateTokenPromise.error.mock.calls[0][0];
+      const errorCallback = updateTokenPromise.then.mock.calls[0][1];
 
       errorCallback();
 
@@ -270,7 +272,7 @@ describe('axios interceptor', () => {
     let updateTokenPromise = mocked(keycloakInstance.updateToken).mock
       .results[0].value;
 
-    const errorCallback = updateTokenPromise.error.mock.calls[0][0];
+    const errorCallback = updateTokenPromise.then.mock.calls[0][1];
 
     errorCallback();
 
@@ -323,7 +325,7 @@ describe('The tokenFactory', () => {
     let updateTokenPromise = mocked(keycloakInstance.updateToken).mock
       .results[0].value;
 
-    const successCallback = updateTokenPromise.success.mock.calls[0][0];
+    const successCallback = updateTokenPromise.then.mock.calls[0][0];
 
     keycloakInstance.token = 'theToken';
     successCallback();
@@ -358,7 +360,7 @@ describe('The tokenFactory', () => {
     let updateTokenPromise = mocked(keycloakInstance.updateToken).mock
       .results[0].value;
 
-    const errorCallback = updateTokenPromise.error.mock.calls[0][0];
+    const errorCallback = updateTokenPromise.then.mock.calls[0][1];
 
     errorCallback();
 
@@ -382,7 +384,7 @@ describe('The tokenFactory', () => {
     let updateTokenPromise = mocked(keycloakInstance.updateToken).mock
       .results[0].value;
 
-    const errorCallback = updateTokenPromise.error.mock.calls[0][0];
+    const errorCallback = updateTokenPromise.then.mock.calls[0][1];
 
     errorCallback();
 

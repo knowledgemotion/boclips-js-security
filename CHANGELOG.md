@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.2] - 2020-03-09
+
+### Added
+- Support for Keycloak 9.0.0
+- Upgrade dependencies
+
 ## [3.2.1] - 2019-08-27
 
 ### Added
