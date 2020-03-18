@@ -1,12 +1,26 @@
 import axios from 'axios';
+import * as KeycloakMock from 'keycloak-js';
 import { mocked } from 'ts-jest/utils';
-import * as Keycloak from 'keycloak-js';
 import { BoclipsKeycloakSecurity } from './BoclipsKeycloakSecurity';
+import { AuthenticateOptions } from './BoclipsSecurity';
 import { extractEndpoint } from './extractEndpoint';
-import BoclipsSecurity, { AuthenticateOptions } from './BoclipsSecurity';
 
 jest.mock('keycloak-js');
 jest.mock('./extractEndpoint');
+
+const Keycloak = KeycloakMock as jest.Mock;
+const firstCallArg = (mockFn: any) => (mockFn as jest.Mock).mock.calls[0][0];
+
+const opts = (
+  options: Partial<AuthenticateOptions> = {},
+): AuthenticateOptions => {
+  return {
+    clientId: 'client-id',
+    realm: 'realm',
+    onLogin: () => {},
+    ...options,
+  };
+};
 
 describe('authenticate', () => {
   it('configures keycloak with the options provided', () => {
@@ -17,7 +31,7 @@ describe('authenticate', () => {
       realm: 'testRealm',
       onLogin: jest.fn(),
     };
-    const instance = new BoclipsKeycloakSecurity(options);
+    const instance = new BoclipsKeycloakSecurity({ options });
 
     expect(Keycloak).toHaveBeenCalledWith({
       url: options.authEndpoint,
@@ -30,29 +44,47 @@ describe('authenticate', () => {
     expect(keycloakInstance.init).toHaveBeenCalledWith({
       onLoad: options.mode,
       promiseType: 'native',
+      checkLoginIframe: false,
     });
   });
 
   it('determines the correct endpoint when not provided via config', () => {
     mocked(extractEndpoint).mockReturnValue('not-test.boclips');
 
-    new BoclipsKeycloakSecurity({} as any);
+    new BoclipsKeycloakSecurity({ options: opts({ authEndpoint: undefined }) });
 
-    expect(Keycloak).toHaveBeenCalledWith({
-      url: 'not-test.boclips/auth',
-      realm: undefined,
-      clientId: undefined,
-    });
+    expect(Keycloak).toHaveBeenCalled();
+    expect(Keycloak.mock.calls[0][0].url).toEqual('not-test.boclips/auth');
   });
 
   it('uses the default login-required mode when not provided', () => {
-    const instance = new BoclipsKeycloakSecurity({} as any);
+    const instance = new BoclipsKeycloakSecurity({
+      options: opts({ mode: undefined }),
+    });
+    const keycloakInstance = instance.getKeycloakInstance();
+    expect(firstCallArg(keycloakInstance.init).onLoad).toEqual(
+      'login-required',
+    );
+  });
+
+  it('iframe checking is enabled when host is not localhost', () => {
+    const instance = new BoclipsKeycloakSecurity({
+      options: opts(),
+      host: 'boclips.com',
+    });
 
     const keycloakInstance = instance.getKeycloakInstance();
-    expect(keycloakInstance.init).toHaveBeenCalledWith({
-      onLoad: 'login-required',
-      promiseType: 'native',
+    expect(firstCallArg(keycloakInstance.init).checkLoginIframe).toEqual(true);
+  });
+
+  it('iframe checking is disabled when host is localhost', () => {
+    const instance = new BoclipsKeycloakSecurity({
+      options: opts(),
+      host: 'localhost',
     });
+
+    const keycloakInstance = instance.getKeycloakInstance();
+    expect(firstCallArg(keycloakInstance.init).checkLoginIframe).toEqual(false);
   });
 
   describe('onLogin callback', () => {
@@ -62,10 +94,10 @@ describe('authenticate', () => {
     let keycloakInstance = null;
 
     beforeEach(() => {
-      options = {
+      options = opts({
         onLogin: jest.fn(),
-      } as any;
-      const instance = new BoclipsKeycloakSecurity(options);
+      });
+      const instance = new BoclipsKeycloakSecurity({ options });
       keycloakInstance = instance.getKeycloakInstance();
       expect(keycloakInstance.init).toHaveBeenCalled();
 
@@ -100,11 +132,11 @@ describe('authenticate', () => {
     let keycloakInstance = null;
 
     beforeEach(() => {
-      options = {
+      options = opts({
         onFailure: jest.fn(),
         onLogin: jest.fn(),
-      } as any;
-      const instance = new BoclipsKeycloakSecurity(options);
+      });
+      const instance = new BoclipsKeycloakSecurity({ options });
       keycloakInstance = instance.getKeycloakInstance();
       expect(keycloakInstance.init).toHaveBeenCalled();
 
@@ -161,7 +193,7 @@ describe('isAuthenticated', () => {
 
   testData.forEach(({ message, data, expectation }) => {
     it(`returns ${expectation}, when ${message}`, () => {
-      const instance = new BoclipsKeycloakSecurity({} as any);
+      const instance = new BoclipsKeycloakSecurity({ options: opts() });
 
       // @ts-ignore
       instance.keycloakInstance = data;
@@ -173,13 +205,16 @@ describe('isAuthenticated', () => {
 
 describe('axios interceptor', () => {
   it('does not install axios if passed false in constructor', () => {
-    new BoclipsKeycloakSecurity({} as any, false);
+    new BoclipsKeycloakSecurity({ options: {} as any, configureAxios: false });
 
     expect(axios.interceptors.request.use).not.toHaveBeenCalled();
   });
 
   it('does install axios if passed false in constructor but configureAxios is called', () => {
-    const instance = new BoclipsKeycloakSecurity({} as any, false);
+    const instance = new BoclipsKeycloakSecurity({
+      options: {} as any,
+      configureAxios: false,
+    });
 
     expect(axios.interceptors.request.use).not.toHaveBeenCalled();
 
@@ -189,11 +224,11 @@ describe('axios interceptor', () => {
   });
 
   it('can install an axios interceptor', () => {
-    const options: Partial<AuthenticateOptions> = {
+    const options = opts({
       mode: 'check-sso',
-    };
+    });
 
-    new BoclipsKeycloakSecurity(options as AuthenticateOptions);
+    new BoclipsKeycloakSecurity({ options });
 
     expect(axios.interceptors.request.use).toHaveBeenCalled();
   });
@@ -204,13 +239,11 @@ describe('axios interceptor', () => {
     let keycloakInstance = null;
 
     beforeEach(() => {
-      const options: Partial<AuthenticateOptions> = {
+      const options = opts({
         mode: 'login-required',
-      };
+      });
 
-      const instance = new BoclipsKeycloakSecurity(
-        options as AuthenticateOptions,
-      ) as BoclipsKeycloakSecurity;
+      const instance = new BoclipsKeycloakSecurity({ options });
 
       keycloakInstance = instance.getKeycloakInstance();
       keycloakInstance.token = 'test-token-123';
@@ -250,13 +283,11 @@ describe('axios interceptor', () => {
   });
 
   it('if check-sso mode, and token refresh fails then config does not change', () => {
-    const options: Partial<AuthenticateOptions> = {
+    const options = opts({
       mode: 'check-sso',
-    };
+    });
 
-    const instance = new BoclipsKeycloakSecurity(
-      options as AuthenticateOptions,
-    );
+    const instance = new BoclipsKeycloakSecurity({ options });
     const keycloakInstance = instance.getKeycloakInstance();
     keycloakInstance.token = 'test-token-123';
 
@@ -282,7 +313,7 @@ describe('axios interceptor', () => {
 
 describe('logout', () => {
   it('will call keycloak logout with options', () => {
-    const instance = new BoclipsKeycloakSecurity({} as any);
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
 
     const logoutOptions = {
       redirectUri: 'test-redirect/uri',
@@ -297,12 +328,12 @@ describe('logout', () => {
 
 describe('ssoLogin', () => {
   it('will call keycloak login with options', () => {
-    const instance = new BoclipsKeycloakSecurity({} as any);
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
 
     const ssoLoginOptions = {
       idpHint: 'google',
       redirectUri: 'test-redirect/uri',
-    }
+    };
 
     instance.ssoLogin(ssoLoginOptions);
 
@@ -313,7 +344,7 @@ describe('ssoLogin', () => {
 
 describe('The tokenFactory', () => {
   it('will resolve a token, when keycloak has updated the token', () => {
-    const instance = new BoclipsKeycloakSecurity({} as any);
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
 
     const keycloakInstance = instance.getKeycloakInstance();
 
@@ -334,7 +365,7 @@ describe('The tokenFactory', () => {
   });
 
   it('will pass the minValidity into keycloak when updating token', () => {
-    const instance = new BoclipsKeycloakSecurity({} as any);
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
 
     const keycloakInstance = instance.getKeycloakInstance();
 
@@ -347,8 +378,8 @@ describe('The tokenFactory', () => {
 
   it('will reject, and call keycloak.login if mode is login-required', () => {
     const instance = new BoclipsKeycloakSecurity({
-      mode: 'login-required',
-    } as any);
+      options: opts({ mode: 'login-required' }),
+    });
 
     const keycloakInstance = instance.getKeycloakInstance();
 
@@ -371,8 +402,8 @@ describe('The tokenFactory', () => {
 
   it('will reject, if keycloak is unable to update the token, and is check-sso', () => {
     const instance = new BoclipsKeycloakSecurity({
-      mode: 'check-sso',
-    } as any);
+      options: opts({ mode: 'check-sso' }),
+    });
 
     const keycloakInstance = instance.getKeycloakInstance();
 

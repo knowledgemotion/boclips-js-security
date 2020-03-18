@@ -1,11 +1,9 @@
 const axios = {
-  interceptors:{
+  interceptors: {
     request: {
-      use: jest.fn()
-    }
-  }
+      use: jest.fn(),
+    },
+  },
 };
-
-
 
 export default axios;

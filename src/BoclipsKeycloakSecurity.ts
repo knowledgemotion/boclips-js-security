@@ -1,26 +1,34 @@
 import axios from 'axios';
+import * as Keycloak from 'keycloak-js';
 import {
   AuthenticateOptions,
   BoclipsSecurity,
-  LogoutOptions, SsoLoginOptions
-} from "./BoclipsSecurity";
-import * as Keycloak from 'keycloak-js';
+  LogoutOptions,
+  SsoLoginOptions,
+} from './BoclipsSecurity';
 import { extractEndpoint } from './extractEndpoint';
+import { isDevelopmentAddress } from './isDevelopmentAddress';
 
 const LOGIN_REQUIRED = 'login-required';
+
+interface ConstructorArg {
+  options: AuthenticateOptions;
+  configureAxios?: boolean;
+  host?: string;
+}
 
 export class BoclipsKeycloakSecurity implements BoclipsSecurity {
   private readonly keycloakInstance: Keycloak.KeycloakInstance<'native'> = null;
   private readonly mode: AuthenticateOptions['mode'];
 
-  public constructor(
-    options: AuthenticateOptions,
-    configureAxios: boolean = true,
-  ) {
+  public constructor({
+    options,
+    configureAxios = true,
+    host = window.location.host,
+  }: ConstructorArg) {
     this.mode = options.mode || LOGIN_REQUIRED;
     const url =
-      options.authEndpoint ||
-      extractEndpoint(window.location.host, 'login') + '/auth';
+      options.authEndpoint || extractEndpoint(host, 'login') + '/auth';
 
     this.keycloakInstance = Keycloak<'native'>({
       url,
@@ -28,19 +36,23 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
       clientId: options.clientId,
     });
 
+    const checkLoginIframe = !isDevelopmentAddress(host);
     this.keycloakInstance
-      .init({ onLoad: this.mode, promiseType: 'native'})
-      .then(authenticated => {
-        if (authenticated) {
-          options.onLogin(this.keycloakInstance);
-        } else {
-          options.onFailure && options.onFailure();
-        }
-      }, error => {
-        console.error('An error occurred trying to login', error);
+      .init({ onLoad: this.mode, promiseType: 'native', checkLoginIframe })
+      .then(
+        authenticated => {
+          if (authenticated) {
+            options.onLogin(this.keycloakInstance);
+          } else {
+            options.onFailure && options.onFailure();
+          }
+        },
+        error => {
+          console.error('An error occurred trying to login', error);
 
-        options.onFailure && options.onFailure();
-      });
+          options.onFailure && options.onFailure();
+        },
+      );
 
     if (configureAxios) {
       this.configureAxios();
@@ -79,9 +91,8 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
 
   public getTokenFactory = (minValidity: number) => () =>
     new Promise<string>((resolve, reject) => {
-      this.keycloakInstance
-        .updateToken(minValidity)
-        .then(() => {
+      this.keycloakInstance.updateToken(minValidity).then(
+        () => {
           return resolve(this.keycloakInstance.token);
         },
         _error => {
@@ -90,7 +101,8 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
           }
 
           reject(false);
-        })
+        },
+      );
     });
 
   public getKeycloakInstance = () => this.keycloakInstance;

@@ -13,9 +13,14 @@ class Demo extends Component {
             <strong>WORKS</strong>
           </div>
           <br />
-          <button id="logout" onClick={() => security.logout({
-            redirectUri: window.location.href
-          })}>
+          <button
+            id="logout"
+            onClick={() =>
+              security.logout({
+                redirectUri: window.location.href,
+              })
+            }
+          >
             LOGOUT
           </button>
         </section>
@@ -25,7 +30,9 @@ class Demo extends Component {
 
   public componentWillMount() {
     axios
-      .get('https://api.staging-boclips.com/v1/videos?query=query-from-boclips-js-security')
+      .get(
+        'https://api.staging-boclips.com/v1/videos?query=query-from-boclips-js-security',
+      )
       .then(console.log)
       .catch(console.error);
   }

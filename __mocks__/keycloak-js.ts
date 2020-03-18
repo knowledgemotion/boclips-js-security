@@ -1,6 +1,5 @@
 import { KeycloakPromise } from 'keycloak-js';
 
-
 const Promise = () => {
   const promise = {} as Promise<any>;
 
@@ -14,5 +13,5 @@ module.exports = jest.fn().mockReturnValue({
   init: jest.fn().mockReturnValue(Promise()),
   updateToken: jest.fn().mockReturnValue(Promise()),
   login: jest.fn(),
-  logout: jest.fn()
+  logout: jest.fn(),
 });

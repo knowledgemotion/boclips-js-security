@@ -15,7 +15,10 @@ it('passes the createInstance options to the KeycloakSecurity constructor', () =
 
   BoclipsSecurity.createInstance(options);
 
-  expect(BoclipsKeycloakSecurity).toHaveBeenCalledWith(options, true);
+  expect(BoclipsKeycloakSecurity).toHaveBeenCalledWith({
+    options,
+    configureAxios: true,
+  });
 });
 
 it('returns the same instance that is created', () => {
