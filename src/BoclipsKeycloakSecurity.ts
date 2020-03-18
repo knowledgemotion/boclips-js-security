@@ -24,7 +24,7 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
   public constructor({
     options,
     configureAxios = true,
-    host = window.location.host,
+    host = window.location.hostname,
   }: ConstructorArg) {
     this.mode = options.mode || LOGIN_REQUIRED;
     const url =
