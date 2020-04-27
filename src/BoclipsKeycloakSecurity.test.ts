@@ -8,6 +8,7 @@ import { extractEndpoint } from './extractEndpoint';
 jest.mock('keycloak-js');
 jest.mock('./extractEndpoint');
 
+// @ts-ignore
 const Keycloak = KeycloakMock as jest.Mock;
 const firstCallArg = (mockFn: any) => (mockFn as jest.Mock).mock.calls[0][0];
 
@@ -43,7 +44,6 @@ describe('authenticate', () => {
 
     expect(keycloakInstance.init).toHaveBeenCalledWith({
       onLoad: options.mode,
-      promiseType: 'native',
       checkLoginIframe: false,
     });
   });

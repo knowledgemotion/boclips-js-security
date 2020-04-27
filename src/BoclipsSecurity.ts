@@ -2,7 +2,7 @@ import * as Keycloak from 'keycloak-js';
 import { BoclipsKeycloakSecurity } from './BoclipsKeycloakSecurity';
 
 export interface AuthenticateOptions {
-  onLogin: (keycloak: Keycloak.KeycloakInstance<'native'>) => void;
+  onLogin: (keycloak: Keycloak.KeycloakInstance) => void;
   onFailure?: () => void;
   realm: string;
   clientId: string;

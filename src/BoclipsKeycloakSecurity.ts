@@ -18,7 +18,7 @@ interface ConstructorArg {
 }
 
 export class BoclipsKeycloakSecurity implements BoclipsSecurity {
-  private readonly keycloakInstance: Keycloak.KeycloakInstance<'native'> = null;
+  private readonly keycloakInstance: Keycloak.KeycloakInstance = null;
   private readonly mode: AuthenticateOptions['mode'];
 
   public constructor({
@@ -30,7 +30,7 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
     const url =
       options.authEndpoint || extractEndpoint(host, 'login') + '/auth';
 
-    this.keycloakInstance = Keycloak<'native'>({
+    this.keycloakInstance = Keycloak({
       url,
       realm: options.realm,
       clientId: options.clientId,
@@ -38,7 +38,7 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
 
     const checkLoginIframe = !isDevelopmentAddress(host);
     this.keycloakInstance
-      .init({ onLoad: this.mode, promiseType: 'native', checkLoginIframe })
+      .init({ onLoad: this.mode, checkLoginIframe })
       .then(
         authenticated => {
           if (authenticated) {
