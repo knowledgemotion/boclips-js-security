@@ -2,7 +2,9 @@ import axios from 'axios';
 import * as React from 'react';
 import { Component } from 'react';
 import * as ReactDom from 'react-dom';
-import BoclipsSecurity, { AuthenticateOptions } from '../src/BoclipsSecurity';
+import BoclipsSecurity, {
+  AuthenticateOptions,
+} from '../../src/BoclipsSecurity';
 
 class Demo extends Component {
   public render(): React.ReactNode {

@@ -11,7 +11,8 @@
     "lint": "tslint -c tslint.json -p . --fix",
     "build": "webpack && tsc",
     "compile": "tsc -p tsconfig.all.json --noEmit",
-    "demo": "./node_modules/.bin/webpack-dev-server --config demo/webpack.config.js",
+    "demo": "./node_modules/.bin/webpack-dev-server --config demo/module/webpack.config.js",
+    "demo:unpkg": "serve -l 8081  demo/unpkg",
     "e2e": "$(npm bin)/cypress open",
     "e2e:ci": "$(npm bin)/cypress run"
   },
@@ -36,6 +37,7 @@
     "jest": "^25.1.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.1",
+    "serve": "^11.3.0",
     "ts-jest": "^24.0.2",
     "ts-loader": "^5.1.1",
     "tslint": "^5.11.0",

@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>Plain Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://unpkg.com/boclips-js-security@dev/dist/min/boclips-js-security"
+      type="text/javascript"
+    ></script>
+  </head>
+  <body>
+    <div id="container">
+      If it works then something should appear below this
+    </div>
+    <script type="text/javascript">
+      const authOptions = {
+        realm: 'boclips',
+        clientId: 'teachers',
+        mode: 'login-required',
+        authEndpoint: 'https://login.staging-boclips.com/auth',
+        onLogin: () => {
+          const div = document.getElementById('container');
+          div.insertAdjacentText('afterEnd', 'WORKS');
+        },
+      };
+
+      const security = Boclips.default.createInstance(authOptions);
+    </script>
+  </body>
+</html>
