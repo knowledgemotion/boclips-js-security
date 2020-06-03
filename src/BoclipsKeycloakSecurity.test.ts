@@ -1,9 +1,13 @@
-import axios from 'axios';
 import * as KeycloakMock from 'keycloak-js';
 import { mocked } from 'ts-jest/utils';
 import { BoclipsKeycloakSecurity } from './BoclipsKeycloakSecurity';
 import { AuthenticateOptions } from './BoclipsSecurity';
 import { extractEndpoint } from './extractEndpoint';
+import Mock = jest.Mock;
+import axios from '../__mocks__/axios';
+import { getKeycloakToken } from './getKeycloakToken';
+import mock = jest.mock;
+import eventually from './test-support/eventually';
 
 jest.mock('keycloak-js');
 jest.mock('./extractEndpoint');
@@ -11,6 +15,9 @@ jest.mock('./extractEndpoint');
 // @ts-ignore
 const Keycloak = KeycloakMock as jest.Mock;
 const firstCallArg = (mockFn: any) => (mockFn as jest.Mock).mock.calls[0][0];
+
+jest.mock('./getKeycloakToken');
+const mockGetKeycloakToken = getKeycloakToken as Mock;
 
 const opts = (
   options: Partial<AuthenticateOptions> = {},
@@ -24,6 +31,16 @@ const opts = (
 };
 
 describe('authenticate', () => {
+  beforeEach(() => {
+    mockGetKeycloakToken.mockReturnValue(
+      Promise.resolve({
+        access_token: 'accessToken',
+        refresh_token: 'refreshToken',
+        id_token: 'idToken',
+      }),
+    );
+  });
+
   it('configures keycloak with the options provided', () => {
     const options: AuthenticateOptions = {
       authEndpoint: 'test.boclips/auth',
@@ -45,6 +62,36 @@ describe('authenticate', () => {
     expect(keycloakInstance.init).toHaveBeenCalledWith({
       onLoad: options.mode,
       checkLoginIframe: false,
+    });
+  });
+  it('configures keycloak for automatic login after registration', async () => {
+    const options: AuthenticateOptions = {
+      authEndpoint: 'test.boclips/auth',
+      mode: 'login-required',
+      clientId: '10',
+      realm: 'testRealm',
+      username: 'username@boclips.com',
+      password: 'test',
+      onLogin: jest.fn(),
+    };
+    const instance = new BoclipsKeycloakSecurity({ options });
+
+    expect(Keycloak).toHaveBeenCalledWith({
+      url: options.authEndpoint,
+      realm: options.realm,
+      clientId: options.clientId,
+    });
+
+    const keycloakInstance = instance.getKeycloakInstance();
+
+    eventually(() => {
+      expect(keycloakInstance.init).toHaveBeenCalledWith({
+        onLoad: options.mode,
+        checkLoginIframe: false,
+        access_token: expect.any(String),
+        refresh_token: expect.any(String),
+        id_token: expect.any(String),
+      });
     });
   });
 
