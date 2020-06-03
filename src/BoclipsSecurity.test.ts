@@ -11,6 +11,8 @@ it('passes the createInstance options to the KeycloakSecurity constructor', () =
     clientId: '10',
     realm: 'testRealm',
     onLogin: jest.fn(),
+    username: 'username@boclips.com',
+    password: 'test'
   } as AuthenticateOptions;
 
   BoclipsSecurity.createInstance(options);

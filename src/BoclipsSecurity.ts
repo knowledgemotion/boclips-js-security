@@ -8,6 +8,8 @@ export interface AuthenticateOptions {
   clientId: string;
   mode?: 'login-required' | 'check-sso';
   authEndpoint?: string;
+  username?: string;
+  password?: string;
 }
 
 export interface LogoutOptions {
