@@ -40,8 +40,6 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
       clientId: options.clientId,
     });
 
-    const checkLoginIframe = !isDevelopmentAddress(host);
-
     if (options.username && options.password) {
       const tokenRequestOptions = this.getTokenRequestOptions(
         options,
@@ -54,12 +52,12 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
           id_token: idToken,
         } = response.data;
         this.initialiseKeycloak(
-          { onLoad: this.mode, checkLoginIframe, token, refreshToken, idToken },
+          { onLoad: this.mode, checkLoginIframe: false, token, refreshToken, idToken },
           options,
         );
       });
     } else {
-      this.initialiseKeycloak({ onLoad: this.mode, checkLoginIframe }, options);
+      this.initialiseKeycloak({ onLoad: this.mode, checkLoginIframe: !isDevelopmentAddress(host) }, options);
     }
     if (configureAxios) {
       this.configureAxios();
