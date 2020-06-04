@@ -40,67 +40,63 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
       clientId: options.clientId,
     });
 
-    const authData: KeycloakTokenRequestOptions = {
-      client_id: options.clientId,
-      username: options.username,
-      password: options.password,
-      grant_type: 'password',
-      scope: 'openid',
-    };
-
     const checkLoginIframe = !isDevelopmentAddress(host);
 
-    if (authData.username && authData.password) {
-      getKeycloakToken(authData, this.getLoginUrl(options.realm, url)).then(
-        (response) => {
-          const {
-            access_token: token,
-            refresh_token: refreshToken,
-            id_token: idToken,
-          } = response.data;
-          this.keycloakInstance
-            .init({
-              onLoad: 'login-required',
-              checkLoginIframe,
-              token,
-              refreshToken,
-              idToken,
-            })
-            .then(
-              (authenticated) => {
-                if (authenticated) {
-                  options.onLogin(this.keycloakInstance);
-                } else {
-                  options.onFailure && options.onFailure();
-                }
-              },
-              (error) => {
-                console.error('An error occurred trying to login', error);
-                options.onFailure && options.onFailure();
-              },
-            );
-        },
+    if (options.username && options.password) {
+      const tokenRequestOptions = this.getTokenRequestOptions(
+        options,
+        url,
       );
+      getKeycloakToken(tokenRequestOptions).then((response) => {
+        const {
+          access_token: token,
+          refresh_token: refreshToken,
+          id_token: idToken,
+        } = response.data;
+        this.initialiseKeycloak(
+          { onLoad: this.mode, checkLoginIframe, token, refreshToken, idToken },
+          options,
+        );
+      });
     } else {
-      this.keycloakInstance.init({ onLoad: this.mode, checkLoginIframe }).then(
-        (authenticated) => {
-          if (authenticated) {
-            options.onLogin(this.keycloakInstance);
-          } else {
-            options.onFailure && options.onFailure();
-          }
-        },
-        (error) => {
-          console.error('An error occurred trying to login', error);
-
-          options.onFailure && options.onFailure();
-        },
-      );
+      this.initialiseKeycloak({ onLoad: this.mode, checkLoginIframe }, options);
     }
     if (configureAxios) {
       this.configureAxios();
     }
   }
+
+  private initialiseKeycloak = (
+    initOptions: KeycloakInitOptions,
+    authOptions: AuthenticateOptions,
+  ) => {
+    this.keycloakInstance.init(initOptions).then(
+      (authenticated) => {
+        if (authenticated) {
+          authOptions.onLogin(this.keycloakInstance);
+        } else {
+          authOptions.onFailure && authOptions.onFailure();
+        }
+      },
+      (error) => {
+        console.error('An error occurred trying to login', error);
+        authOptions.onFailure && authOptions.onFailure();
+      },
+    );
+  };
+
+  private getTokenRequestOptions = (
+    options: AuthenticateOptions,
+    url: string,
+  ): KeycloakTokenRequestOptions => ({
+    client_id: options.clientId,
+    realm: options.realm,
+    authEndpoint: url,
+    username: options.username,
+    password: options.password,
+    grant_type: 'password',
+    scope: 'openid',
+  });
 
   public isAuthenticated = () => {
     return !!(
@@ -110,8 +106,6 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
 
   public configureAxios = async () => {
     const tokenFactory = this.getTokenFactory(5);
-
-    console.log('Configure axios', axios.interceptors.request);
     axios.interceptors.request.use(async (config) => {
       try {
         const token = await tokenFactory();
@@ -123,7 +117,6 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
 
       return config;
     });
-    console.log(axios.interceptors.request);
   };
 
   public ssoLogin = (options: SsoLoginOptions) => {
@@ -151,7 +144,4 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
     });
 
   public getKeycloakInstance = () => this.keycloakInstance;
-
-  private getLoginUrl = (realm: string, authEndpoint: string) =>
-    `${authEndpoint}/realms/${realm}/protocol/openid-connect/token`;
 }

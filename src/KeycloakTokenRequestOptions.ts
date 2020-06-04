@@ -1,4 +1,6 @@
 export interface KeycloakTokenRequestOptions {
+  authEndpoint: string;
+  realm: string;
   client_id: string;
   username: string;
   password: string;
