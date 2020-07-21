@@ -25,6 +25,7 @@ const opts = (
   return {
     clientId: 'client-id',
     realm: 'realm',
+    requireLoginPage: false,
     onLogin: () => {},
     ...options,
   };
@@ -41,10 +42,10 @@ describe('authenticate', () => {
     );
   });
 
-  it('configures keycloak with the options provided', () => {
+  it('configures keycloak with correct options', () => {
     const options: AuthenticateOptions = {
       authEndpoint: 'test.boclips/auth',
-      mode: 'login-required',
+      requireLoginPage: true,
       clientId: '10',
       realm: 'testRealm',
       onLogin: jest.fn(),
@@ -60,14 +61,17 @@ describe('authenticate', () => {
     const keycloakInstance = instance.getKeycloakInstance();
 
     expect(keycloakInstance.init).toHaveBeenCalledWith({
-      onLoad: options.mode,
+      onLoad: 'check-sso',
       checkLoginIframe: false,
+      pkceMethod: 'S256',
+      silentCheckSsoRedirectUri: 'http://localhost/silent-check-sso.html',
     });
   });
+
   it('configures keycloak for automatic login after registration', async () => {
     const options: AuthenticateOptions = {
       authEndpoint: 'test.boclips/auth',
-      mode: 'login-required',
+      requireLoginPage: true,
       clientId: '10',
       realm: 'testRealm',
       username: 'username@boclips.com',
@@ -86,7 +90,7 @@ describe('authenticate', () => {
 
     eventually(() => {
       expect(keycloakInstance.init).toHaveBeenCalledWith({
-        onLoad: options.mode,
+        onLoad: 'LOGIN_REQUIRED',
         checkLoginIframe: false,
         access_token: expect.any(String),
         refresh_token: expect.any(String),
@@ -102,16 +106,6 @@ describe('authenticate', () => {
 
     expect(Keycloak).toHaveBeenCalled();
     expect(Keycloak.mock.calls[0][0].url).toEqual('not-test.boclips/auth');
-  });
-
-  it('uses the default login-required mode when not provided', () => {
-    const instance = new BoclipsKeycloakSecurity({
-      options: opts({ mode: undefined }),
-    });
-    const keycloakInstance = instance.getKeycloakInstance();
-    expect(firstCallArg(keycloakInstance.init).onLoad).toEqual(
-      'login-required',
-    );
   });
 
   it('iframe checking is enabled when host is not localhost', () => {
@@ -257,7 +251,7 @@ describe('axios interceptor', () => {
     expect(axios.interceptors.request.use).not.toHaveBeenCalled();
   });
 
-  it('does install axios if passed false in constructor but configureAxios is called', () => {
+  it('installs axios if passed false in constructor but configureAxios is called', () => {
     const instance = new BoclipsKeycloakSecurity({
       options: {} as any,
       configureAxios: false,
@@ -272,7 +266,7 @@ describe('axios interceptor', () => {
 
   it('can install an axios interceptor', () => {
     const options = opts({
-      mode: 'check-sso',
+      requireLoginPage: false,
     });
 
     new BoclipsKeycloakSecurity({ options });
@@ -280,14 +274,14 @@ describe('axios interceptor', () => {
     expect(axios.interceptors.request.use).toHaveBeenCalled();
   });
 
-  describe('interceptor behaviour with login-required', () => {
+  describe('interceptor behaviour when login page is required', () => {
     let updateTokenPromise = null;
     let interceptorPromise = null;
     let keycloakInstance = null;
 
     beforeEach(() => {
       const options = opts({
-        mode: 'login-required',
+        requireLoginPage: true,
       });
 
       const instance = new BoclipsKeycloakSecurity({ options });
@@ -329,9 +323,9 @@ describe('axios interceptor', () => {
     });
   });
 
-  it('if check-sso mode, and token refresh fails then config does not change', () => {
+  it("doesn't change axios config if login page not required, and token refresh fails", () => {
     const options = opts({
-      mode: 'check-sso',
+      requireLoginPage: false,
     });
 
     const instance = new BoclipsKeycloakSecurity({ options });
@@ -423,9 +417,9 @@ describe('The tokenFactory', () => {
     });
   });
 
-  it('will reject, and call keycloak.login if mode is login-required', () => {
+  it('will reject, and call keycloak.login if login page is required', () => {
     const instance = new BoclipsKeycloakSecurity({
-      options: opts({ mode: 'login-required' }),
+      options: opts({ requireLoginPage: true }),
     });
 
     const keycloakInstance = instance.getKeycloakInstance();
@@ -447,9 +441,9 @@ describe('The tokenFactory', () => {
     return expect(tokenPromise).rejects.toEqual(false);
   });
 
-  it('will reject, if keycloak is unable to update the token, and is check-sso', () => {
+  it("will reject, if keycloak is unable to update the token, and login page isn't required", () => {
     const instance = new BoclipsKeycloakSecurity({
-      options: opts({ mode: 'check-sso' }),
+      options: opts({ requireLoginPage: false }),
     });
 
     const keycloakInstance = instance.getKeycloakInstance();

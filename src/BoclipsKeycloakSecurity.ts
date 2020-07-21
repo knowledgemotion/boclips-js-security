@@ -13,8 +13,6 @@ import { getKeycloakToken } from './getKeycloakToken';
 import { isDevelopmentAddress } from './isDevelopmentAddress';
 import { KeycloakTokenRequestOptions } from './KeycloakTokenRequestOptions';
 
-const LOGIN_REQUIRED = 'login-required';
-
 interface ConstructorArg {
   options: AuthenticateOptions;
   configureAxios?: boolean;
@@ -23,16 +21,17 @@ interface ConstructorArg {
 
 export class BoclipsKeycloakSecurity implements BoclipsSecurity {
   private readonly keycloakInstance: Keycloak.KeycloakInstance = null;
-  private readonly mode: AuthenticateOptions['mode'];
+  private readonly requireLoginPage: boolean;
 
   public constructor({
     options,
     configureAxios = true,
     host = window.location.hostname,
   }: ConstructorArg) {
-    this.mode = options.mode || LOGIN_REQUIRED;
     const url =
       options.authEndpoint || extractEndpoint(host, 'login') + '/auth';
+
+    this.requireLoginPage = options.requireLoginPage;
 
     this.keycloakInstance = Keycloak({
       url,
@@ -41,10 +40,7 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
     });
 
     if (options.username && options.password) {
-      const tokenRequestOptions = this.getTokenRequestOptions(
-        options,
-        url,
-      );
+      const tokenRequestOptions = this.getTokenRequestOptions(options, url);
       getKeycloakToken(tokenRequestOptions).then((response) => {
         const {
           access_token: token,
@@ -52,12 +48,21 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
           id_token: idToken,
         } = response.data;
         this.initialiseKeycloak(
-          { onLoad: this.mode, checkLoginIframe: false, token, refreshToken, idToken },
+          {
+            onLoad: 'check-sso',
+            checkLoginIframe: false,
+            token,
+            refreshToken,
+            idToken,
+          },
           options,
         );
       });
     } else {
-      this.initialiseKeycloak({ onLoad: this.mode, checkLoginIframe: !isDevelopmentAddress(host) }, options);
+      this.initialiseKeycloak(
+        { onLoad: 'check-sso', checkLoginIframe: !isDevelopmentAddress(host) },
+        options,
+      );
     }
     if (configureAxios) {
       this.configureAxios();
@@ -68,19 +73,29 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
     initOptions: KeycloakInitOptions,
     authOptions: AuthenticateOptions,
   ) => {
-    this.keycloakInstance.init(initOptions).then(
-      (authenticated) => {
-        if (authenticated) {
-          authOptions.onLogin(this.keycloakInstance);
-        } else {
+    this.keycloakInstance
+      .init({
+        silentCheckSsoRedirectUri:
+          window.location.origin + '/silent-check-sso.html',
+        pkceMethod: 'S256',
+        ...initOptions,
+      })
+      .then(
+        (authenticated) => {
+          if (authenticated) {
+            authOptions.onLogin(this.keycloakInstance);
+          } else {
+            authOptions.onFailure && authOptions.onFailure();
+            if (this.requireLoginPage) {
+              this.keycloakInstance.login();
+            }
+          }
+        },
+        (error) => {
+          console.error('An error occurred trying to login', error);
           authOptions.onFailure && authOptions.onFailure();
-        }
-      },
-      (error) => {
-        console.error('An error occurred trying to login', error);
-        authOptions.onFailure && authOptions.onFailure();
-      },
-    );
+        },
+      );
   };
 
   private getTokenRequestOptions = (
@@ -132,7 +147,7 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
           return resolve(this.keycloakInstance.token);
         },
         (_error) => {
-          if (this.mode === LOGIN_REQUIRED) {
+          if (this.requireLoginPage) {
             this.keycloakInstance.login();
           }
 

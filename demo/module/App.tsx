@@ -43,7 +43,7 @@ class Demo extends Component {
 const authOptions: AuthenticateOptions = {
   realm: 'boclips',
   clientId: 'teachers',
-  mode: 'login-required',
+  requireLoginPage: true,
   authEndpoint: 'https://login.staging-boclips.com/auth',
   onLogin: () => {
     ReactDom.render(<Demo />, document.getElementById('content'));

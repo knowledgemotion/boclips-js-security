@@ -5,19 +5,19 @@ const distPath = path.resolve(__dirname, 'dist');
 
 module.exports = {
   mode: 'development',
-  devtool: "eval-source-map",
+  devtool: 'eval-source-map',
   entry: path.resolve(__dirname, 'App.tsx'),
   output: {
     path: distPath,
     filename: '[name].[chunkhash:8].js',
-    publicPath: '/'
+    publicPath: '/',
   },
   devServer: {
     contentBase: distPath,
     port: 8081,
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
     rules: [
@@ -27,20 +27,21 @@ module.exports = {
         use: {
           loader: 'ts-loader',
           options: {
-            transpileOnly: true
-          }
-        }
+            transpileOnly: true,
+          },
+        },
       },
       {
         test: /\.(gif|png|jpe?g|svg)$/i,
-        use: [
-          'file-loader',
-          'image-webpack-loader'
-        ],
-      }
-    ]
+        use: ['file-loader', 'image-webpack-loader'],
+      },
+    ],
   },
   plugins: [
-    new HtmlWebpackPlugin({template: path.resolve(__dirname, 'index.html')})
-  ]
+    new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'index.html') }),
+    new HtmlWebpackPlugin({
+      filename: 'silent-check-sso.html',
+      template: path.resolve(__dirname, 'silent-check-sso.html'),
+    }),
+  ],
 };

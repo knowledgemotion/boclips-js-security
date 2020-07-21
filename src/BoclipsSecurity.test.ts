@@ -4,29 +4,10 @@ import BoclipsSecurity, { AuthenticateOptions } from './BoclipsSecurity';
 
 jest.mock('./BoclipsKeycloakSecurity');
 
-it('passes the createInstance options to the KeycloakSecurity constructor', () => {
-  const options = {
-    authEndpoint: 'test.boclips/auth',
-    mode: 'login-required',
-    clientId: '10',
-    realm: 'testRealm',
-    onLogin: jest.fn(),
-    username: 'username@boclips.com',
-    password: 'test'
-  } as AuthenticateOptions;
-
-  BoclipsSecurity.createInstance(options);
-
-  expect(BoclipsKeycloakSecurity).toHaveBeenCalledWith({
-    options,
-    configureAxios: true,
-  });
-});
-
 it('returns the same instance that is created', () => {
   const options: AuthenticateOptions = {
     authEndpoint: 'test.boclips/auth',
-    mode: 'login-required',
+    requireLoginPage: true,
     clientId: '10',
     realm: 'testRealm',
     onLogin: jest.fn(),
