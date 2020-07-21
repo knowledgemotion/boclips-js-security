@@ -52,9 +52,6 @@ jobs:
       email: engineering@boclips.com
       path: dist
       tag: dev
-  - put: version
-    params:
-      file: version/version
 
 - name: major
   plan:
