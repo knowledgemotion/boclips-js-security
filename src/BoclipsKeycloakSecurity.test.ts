@@ -32,16 +32,6 @@ const opts = (
 };
 
 describe('authenticate', () => {
-  beforeEach(() => {
-    mockGetKeycloakToken.mockReturnValue(
-      Promise.resolve({
-        access_token: 'accessToken',
-        refresh_token: 'refreshToken',
-        id_token: 'idToken',
-      }),
-    );
-  });
-
   it('configures keycloak with correct options', () => {
     const options: AuthenticateOptions = {
       authEndpoint: 'test.boclips/auth',
@@ -69,6 +59,16 @@ describe('authenticate', () => {
   });
 
   it('configures keycloak for automatic login after registration', async () => {
+    mockGetKeycloakToken.mockReturnValue(
+      Promise.resolve({
+        data: {
+          access_token: 'accessToken',
+          refresh_token: 'refreshToken',
+          id_token: 'idToken',
+        },
+      }),
+    );
+
     const options: AuthenticateOptions = {
       authEndpoint: 'test.boclips/auth',
       requireLoginPage: true,
@@ -88,13 +88,15 @@ describe('authenticate', () => {
 
     const keycloakInstance = instance.getKeycloakInstance();
 
-    eventually(() => {
+    await eventually(() => {
       expect(keycloakInstance.init).toHaveBeenCalledWith({
-        onLoad: 'LOGIN_REQUIRED',
         checkLoginIframe: false,
-        access_token: expect.any(String),
-        refresh_token: expect.any(String),
-        id_token: expect.any(String),
+        idToken: 'idToken',
+        onLoad: 'check-sso',
+        pkceMethod: 'S256',
+        refreshToken: 'refreshToken',
+        silentCheckSsoRedirectUri: 'http://localhost/silent-check-sso.html',
+        token: 'accessToken',
       });
     });
   });
