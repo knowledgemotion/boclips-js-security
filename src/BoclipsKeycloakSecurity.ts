@@ -32,60 +32,71 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
       options.authEndpoint || extractEndpoint(host, 'login') + '/auth';
 
     this.requireLoginPage = options.requireLoginPage;
-
     this.keycloakInstance = Keycloak({
       url,
       realm: options.realm,
       clientId: options.clientId,
     });
 
-    if (options.username && options.password) {
-      const tokenRequestOptions = this.getTokenRequestOptions(options, url);
-      getKeycloakToken(tokenRequestOptions).then((response) => {
-        const {
-          access_token: token,
-          refresh_token: refreshToken,
-          id_token: idToken,
-        } = response.data;
-        this.initialiseKeycloak(
-          {
-            onLoad: 'check-sso',
-            checkLoginIframe: false,
-            token,
-            refreshToken,
-            idToken,
-          },
-          options,
-        );
-      });
-    } else {
-      this.initialiseKeycloak(
-        { onLoad: 'check-sso', checkLoginIframe: !isDevelopmentAddress(host) },
-        options,
-      );
-    }
+    options.username && options.password
+      ? this.initialiseKeycloakWithCredentials(url, options, host)
+      : this.initialiseKeycloak({}, options, host);
+
     if (configureAxios) {
       this.configureAxios();
     }
   }
 
+  private initialiseKeycloakWithCredentials = (
+    authEndpoint: string,
+    options: AuthenticateOptions,
+    host?: string,
+  ) => {
+    getKeycloakToken({
+      client_id: options.clientId,
+      realm: options.realm,
+      authEndpoint,
+      username: options.username,
+      password: options.password,
+      grant_type: 'password',
+      scope: 'openid',
+    }).then(
+      ({
+        data: {
+          access_token: token,
+          refresh_token: refreshToken,
+          id_token: idToken,
+        },
+      }) => {
+        this.initialiseKeycloak(
+          { token, refreshToken, idToken },
+          options,
+          host,
+        );
+      },
+    );
+  };
+
   private initialiseKeycloak = (
-    initOptions: KeycloakInitOptions,
-    authOptions: AuthenticateOptions,
+    extraInitOptions: KeycloakInitOptions,
+    { onLogin: onLogin, onFailure: onFailure }: AuthenticateOptions,
+    host: string,
   ) => {
     this.keycloakInstance
       .init({
+        onLoad: 'check-sso',
+        checkLoginIframe: !isDevelopmentAddress(host),
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html',
         pkceMethod: 'S256',
-        ...initOptions,
+        ...extraInitOptions,
       })
       .then(
         (authenticated) => {
           if (authenticated) {
-            authOptions.onLogin(this.keycloakInstance);
+            onLogin(this.keycloakInstance);
           } else {
-            authOptions.onFailure && authOptions.onFailure();
+            onFailure && onFailure();
             if (this.requireLoginPage) {
               this.keycloakInstance.login();
             }
@@ -93,23 +104,10 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
         },
         (error) => {
           console.error('An error occurred trying to login', error);
-          authOptions.onFailure && authOptions.onFailure();
+          onFailure && onFailure();
         },
       );
   };
-
-  private getTokenRequestOptions = (
-    options: AuthenticateOptions,
-    url: string,
-  ): KeycloakTokenRequestOptions => ({
-    client_id: options.clientId,
-    realm: options.realm,
-    authEndpoint: url,
-    username: options.username,
-    password: options.password,
-    grant_type: 'password',
-    scope: 'openid',
-  });
 
   public isAuthenticated = () => {
     return !!(
