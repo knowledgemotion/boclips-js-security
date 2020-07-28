@@ -15,7 +15,7 @@
       const authOptions = {
         realm: 'boclips',
         clientId: 'teachers',
-        mode: 'login-required',
+        requireLoginPage: true,
         authEndpoint: 'https://login.staging-boclips.com/auth',
         onLogin: () => {
           const div = document.getElementById('container');
