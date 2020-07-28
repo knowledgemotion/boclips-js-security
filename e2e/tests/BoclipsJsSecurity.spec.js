@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
 
-describe('Login journey', function() {
-  it('Creates account, logs in, and logs out', function() {
+describe('login journey', function () {
+  it('logs in and out', function () {
     const username = Cypress.env('USERNAME');
     const password = Cypress.env('PASSWORD');
 
@@ -9,17 +9,17 @@ describe('Login journey', function() {
     logIn(username, password);
 
     cy.get('#header')
-      .then(node => node.text())
+      .then((node) => node.text())
       .should('not.be.empty');
     cy.wait(3000);
     cy.get('#content')
-      .then(node => node.text())
+      .then((node) => node.text())
       .should('not.be.empty');
 
     cy.get('#logout').click();
 
     cy.get('#kc-form-login')
-      .then(node => node.text())
+      .then((node) => node.text())
       .should('not.be.empty');
   });
 });
