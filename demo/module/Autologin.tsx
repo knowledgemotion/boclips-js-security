@@ -19,18 +19,18 @@ class Demo extends Component {
   public render(): React.ReactNode {
     return (
       <>
-        <form onSubmit={this.handleSubmit}>
+        <form id="kc-form-login" onSubmit={this.handleSubmit}>
           <p>
             <label>
               Username
-              <input ref={this.username} autoFocus />
+              <input id="username" ref={this.username} autoFocus />
             </label>
           </p>
 
           <p>
             <label>
               Password
-              <input ref={this.password} type="password" />
+              <input id="password" ref={this.password} type="password" />
             </label>
           </p>
 
@@ -66,13 +66,11 @@ class Demo extends Component {
       requireLoginPage: false,
       authEndpoint: 'https://login.staging-boclips.com/auth',
       onLogin: (authenticated) => {
-        console.log('authed:', authenticated);
         this.setState({
           message: 'Successful authentication!',
         });
       },
       onFailure: (error) => {
-        console.log('failure:', error);
         this.setState({
           message: 'Authentication failure!',
         });

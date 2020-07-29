@@ -60,21 +60,25 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
       password: options.password,
       grant_type: 'password',
       scope: 'openid',
-    }).then(
-      ({
-        data: {
-          access_token: token,
-          refresh_token: refreshToken,
-          id_token: idToken,
+    })
+      .then(
+        ({
+          data: {
+            access_token: token,
+            refresh_token: refreshToken,
+            id_token: idToken,
+          },
+        }) => {
+          this.initialiseKeycloak(
+            { token, refreshToken, idToken },
+            options,
+            host,
+          );
         },
-      }) => {
-        this.initialiseKeycloak(
-          { token, refreshToken, idToken },
-          options,
-          host,
-        );
-      },
-    );
+      )
+      .catch(() => {
+        options.onFailure && options.onFailure();
+      });
   };
 
   private initialiseKeycloak = (
