@@ -10,38 +10,21 @@ describe('login journey', function () {
     }
   });
 
-  it('logs in and out', function () {
-    cy.visit('http://localhost:8081').debug();
-    logIn(username, password);
-
-    cy.get('#header')
-      .then((node) => node.text())
-      .should('not.be.empty');
-    cy.wait(3000);
-    cy.get('#content')
-      .then((node) => node.text())
-      .should('not.be.empty');
-
-    cy.get('#logout').click();
-
-    cy.get('#kc-form-login')
-      .then((node) => node.text())
-      .should('not.be.empty');
+  it('logs in and out', () => {
+    cy.visit('http://localhost:8081').logIn(username, password);
+    cy.contains('WORKS');
+    cy.get('#logout').click().get('#kc-form-login');
   });
 
-  it('can log in using username and password instead of prompting user', function () {
-    cy.visit('http://localhost:8081/autologin.html').debug();
-    cy.contains('Not entered yet');
-    logIn('wrong-user', 'wrong-password');
+  it('can log in using username and password instead of prompting user', () => {
+    cy.visit('http://localhost:8081/autologin.html').contains(
+      'Not entered yet',
+    );
+
+    cy.logIn('wrong username', 'wrong password');
     cy.contains('Authentication failure!');
-    logIn(username, password);
+
+    cy.logIn(username, password);
     cy.contains('Successful authentication!');
   });
 });
-
-function logIn(username, password) {
-  cy.get('#username').clear().type(username);
-  cy.get('#password').clear().type(password);
-  cy.get('#kc-form-login').submit();
-  return this;
-}

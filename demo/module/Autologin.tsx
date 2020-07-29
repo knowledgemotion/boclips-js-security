@@ -19,7 +19,7 @@ class Demo extends Component {
   public render(): React.ReactNode {
     return (
       <>
-        <form id="kc-form-login" onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit}>
           <p>
             <label>
               Username
