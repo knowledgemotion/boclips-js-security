@@ -13,6 +13,7 @@
     "compile": "tsc -p tsconfig.all.json --noEmit",
     "demo:build": "tsc --build demo/module/tsconfig.json && webpack --config demo/module/webpack.config.js",
     "demo": "./node_modules/.bin/webpack-dev-server --config demo/module/webpack.config.js",
+    "demo:autologin": "./node_modules/.bin/webpack-dev-server --config demo/autologin/webpack.config.js",
     "demo:unpkg": "serve -l 8081  demo/unpkg",
     "e2e": "$(npm bin)/cypress open",
     "e2e:ci": "$(npm bin)/cypress run"
