@@ -6,7 +6,10 @@ const distPath = path.resolve(__dirname, 'dist');
 module.exports = {
   mode: 'development',
   devtool: 'eval-source-map',
-  entry: path.resolve(__dirname, 'App.tsx'),
+  entry: {
+    regular: path.resolve(__dirname, 'App.tsx'),
+    autologin: path.resolve(__dirname, 'Autologin.tsx'),
+  },
   output: {
     path: distPath,
     filename: '[name].[chunkhash:8].js',
@@ -38,8 +41,18 @@ module.exports = {
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'index.html') }),
     new HtmlWebpackPlugin({
+      chunks: ['regular'],
+      filename: 'index.html',
+      template: path.resolve(__dirname, 'index.html'),
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['autologin'],
+      filename: 'autologin.html',
+      template: path.resolve(__dirname, 'autologin.html'),
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
       filename: 'silent-check-sso.html',
       template: path.resolve(__dirname, 'silent-check-sso.html'),
     }),
