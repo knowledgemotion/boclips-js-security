@@ -1,19 +1,26 @@
-import axios from 'axios';
 import * as React from 'react';
 import { Component } from 'react';
 import * as ReactDom from 'react-dom';
 import BoclipsSecurity, {
-  AuthenticateOptions,
+  BoclipsSecurity as BoclipsSecurityInstance,
 } from '../../src/BoclipsSecurity';
 
-class Demo extends Component {
+interface State {
+  message: string;
+  security: BoclipsSecurityInstance
+}
+
+class Demo extends Component<{}, State> {
+  private readonly username;
+  private readonly password;
+
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
-    this.state = { message: 'Not entered yet' };
-    this.username = React.createRef();
-    this.password = React.createRef();
+    this.state = { message: 'Not entered yet', security: undefined };
+    this.username = React.createRef<HTMLInputElement>();
+    this.password = React.createRef<HTMLInputElement>();
   }
 
   public render(): React.ReactNode {
@@ -47,12 +54,7 @@ class Demo extends Component {
   }
 
   handleLogOut() {
-    BoclipsSecurity.createInstance({
-      realm: 'boclips',
-      clientId: 'teachers',
-      requireLoginPage: false,
-      authEndpoint: 'https://login.staging-boclips.com/auth',
-    }).logout();
+    this.state.security.logout({redirectUri: ''});
   }
 
   handleSubmit(event) {
@@ -64,14 +66,17 @@ class Demo extends Component {
       realm: 'boclips',
       clientId: 'teachers',
       requireLoginPage: false,
+      checkLoginIframe: false,
       authEndpoint: 'https://login.staging-boclips.com/auth',
-      onLogin: (authenticated) => {
+      onLogin: (_) => {
         this.setState({
+          ...this.state,
           message: 'Successful authentication!',
         });
       },
-      onFailure: (error) => {
+      onFailure: () => {
         this.setState({
+          ...this.state,
           message: 'Authentication failure!',
         });
       },
