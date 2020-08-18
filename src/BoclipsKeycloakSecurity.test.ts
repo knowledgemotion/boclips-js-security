@@ -39,6 +39,7 @@ describe('authenticate', () => {
       clientId: '10',
       realm: 'testRealm',
       onLogin: jest.fn(),
+      checkLoginIframe: false
     };
     const instance = new BoclipsKeycloakSecurity({ options });
 
@@ -53,6 +54,26 @@ describe('authenticate', () => {
     expect(keycloakInstance.init).toHaveBeenCalledWith({
       onLoad: 'check-sso',
       checkLoginIframe: false,
+      pkceMethod: 'S256',
+      silentCheckSsoRedirectUri: 'http://localhost/silent-check-sso.html',
+    });
+  });
+
+  it('checkLoginIfram is enabled by default', () => {
+    const options: AuthenticateOptions = {
+      authEndpoint: 'test.boclips/auth',
+      requireLoginPage: true,
+      clientId: '10',
+      realm: 'testRealm',
+      onLogin: jest.fn(),
+    };
+    const instance = new BoclipsKeycloakSecurity({ options });
+
+    const keycloakInstance = instance.getKeycloakInstance();
+
+    expect(keycloakInstance.init).toHaveBeenCalledWith({
+      onLoad: 'check-sso',
+      checkLoginIframe: true,
       pkceMethod: 'S256',
       silentCheckSsoRedirectUri: 'http://localhost/silent-check-sso.html',
     });
@@ -90,7 +111,7 @@ describe('authenticate', () => {
 
     await eventually(() => {
       expect(keycloakInstance.init).toHaveBeenCalledWith({
-        checkLoginIframe: false,
+        checkLoginIframe: true,
         idToken: 'idToken',
         onLoad: 'check-sso',
         pkceMethod: 'S256',
@@ -118,16 +139,6 @@ describe('authenticate', () => {
 
     const keycloakInstance = instance.getKeycloakInstance();
     expect(firstCallArg(keycloakInstance.init).checkLoginIframe).toEqual(true);
-  });
-
-  it('iframe checking is disabled when host is localhost', () => {
-    const instance = new BoclipsKeycloakSecurity({
-      options: opts(),
-      host: 'localhost',
-    });
-
-    const keycloakInstance = instance.getKeycloakInstance();
-    expect(firstCallArg(keycloakInstance.init).checkLoginIframe).toEqual(false);
   });
 
   describe('onLogin callback', () => {

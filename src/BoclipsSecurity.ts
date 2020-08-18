@@ -7,6 +7,7 @@ export interface AuthenticateOptions {
   requireLoginPage: boolean;
   realm: string;
   clientId: string;
+  checkLoginIframe?: boolean;
   authEndpoint?: string;
   username?: string;
   password?: string;

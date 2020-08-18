@@ -1,7 +1,6 @@
 import axios from 'axios';
 import * as Keycloak from 'keycloak-js';
 import { KeycloakInitOptions } from 'keycloak-js';
-import * as querystring from 'querystring';
 import {
   AuthenticateOptions,
   BoclipsSecurity,
@@ -10,8 +9,6 @@ import {
 } from './BoclipsSecurity';
 import { extractEndpoint } from './extractEndpoint';
 import { getKeycloakToken } from './getKeycloakToken';
-import { isDevelopmentAddress } from './isDevelopmentAddress';
-import { KeycloakTokenRequestOptions } from './KeycloakTokenRequestOptions';
 
 interface ConstructorArg {
   options: AuthenticateOptions;
@@ -83,13 +80,13 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
 
   private initialiseKeycloak = (
     extraInitOptions: KeycloakInitOptions,
-    { onLogin: onLogin, onFailure: onFailure }: AuthenticateOptions,
+    { onLogin, onFailure, checkLoginIframe = true }: AuthenticateOptions,
     host: string,
   ) => {
     this.keycloakInstance
       .init({
         onLoad: 'check-sso',
-        checkLoginIframe: !isDevelopmentAddress(host),
+        checkLoginIframe,
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html',
         pkceMethod: 'S256',
