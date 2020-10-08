@@ -7,7 +7,7 @@ jobs:
   - get: source
     trigger: true
   - task: test
-    file: source/pipeline/test.yml
+    file: source/pipeline/test.yaml
     params:
       CYPRESS_USERNAME: ((test.username))
       CYPRESS_PASSWORD: ((test.password))
@@ -26,7 +26,7 @@ jobs:
     params:
       pre: dev
   - task: release
-    file: source/pipeline/release.yml
+    file: source/pipeline/release.yaml
   - put: npm-registry
     params:
       username: ((npm.username))
@@ -57,7 +57,7 @@ jobs:
     params:
       bump: final
   - task: release
-    file: source/pipeline/release.yml
+    file: source/pipeline/release.yaml
   - put: npm-registry
     params:
       username: ((npm.username))

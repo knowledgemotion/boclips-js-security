@@ -19,5 +19,5 @@ export CYPRESS_PASSWORD
 
 fly --target ci execute \
     --input source="$cwd" \
-    --config "$cwd/pipeline/test.yml" \
+    --config "$cwd/pipeline/test.yaml" \
     --output dist=fly-dist
