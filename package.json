@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "audit-ci": "audit-ci --config audit-ci.json",
+    "audit": "npm audit --audit-level critical --production",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
     "lint": "tslint -c tslint.json -p . --fix",
@@ -30,7 +30,6 @@
     "@types/jest": "^24.0.12",
     "@types/react": "^16.4.14",
     "@types/react-dom": "^16.0.7",
-    "audit-ci": "^2.2.0",
     "axios": "^0.19.0",
     "axios-mock-adapter": "^1.18.1",
     "clean-webpack-plugin": "^3.0.0",
