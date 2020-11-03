@@ -1,5 +1,3 @@
-import uuid from 'uuid/v4';
-
 describe('login journey', function () {
   const username = Cypress.env('USERNAME');
   const password = Cypress.env('PASSWORD');
