@@ -31,7 +31,7 @@
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.0.7",
     "axios": "^0.19.2",
-    "axios-mock-adapter": "^1.18.1",
+    "axios-mock-adapter": "^1.19.0",
     "clean-webpack-plugin": "^3.0.0",
     "cypress": "^4.11.0",
     "file-loader": "^6.2.0",
