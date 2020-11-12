@@ -10,7 +10,7 @@ export CYPRESS_PASSWORD
 git pull -r
 
 npm i
-npm run audit-ci
+npm run audit
 npm run compile
 npm run build
 npm run test
