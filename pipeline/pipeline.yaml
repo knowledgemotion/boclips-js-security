@@ -80,14 +80,14 @@ resources:
   source:
     branch: master
     private_key: ((source.repo-key))
-    uri: git@github.com:knowledgemotion/boclips-js-security.git
+    uri: git@github.com:boclips/boclips-js-security.git
 
 - name: version
   type: semver
   source:
     initial_version: "1.0.4"
     driver: git
-    uri: git@github.com:knowledgemotion/versions.git
+    uri: git@github.com:boclips/versions.git
     branch: master
     file: boclips-js-security
     private_key: ((versions.repo-key))
