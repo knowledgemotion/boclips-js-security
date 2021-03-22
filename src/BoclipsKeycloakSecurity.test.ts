@@ -39,7 +39,7 @@ describe('authenticate', () => {
       clientId: '10',
       realm: 'testRealm',
       onLogin: jest.fn(),
-      checkLoginIframe: false
+      checkLoginIframe: false,
     };
     const instance = new BoclipsKeycloakSecurity({ options });
 
@@ -220,40 +220,37 @@ describe('authenticate', () => {
 });
 
 describe('isAuthenticated', () => {
-  const testData = [
-    {
-      message: 'authenticated with a token',
-      data: {
-        authenticated: true,
-        token: 'token123',
-      },
-      expectation: true,
-    },
-    {
-      message: 'authenticated with a token',
-      data: {
-        authenticated: false,
-      },
-      expectation: false,
-    },
-    {
-      message: 'authenticated with a token',
-      data: {
-        authenticated: true,
-      },
-      expectation: false,
-    },
-  ];
+  it(`returns true when authenticated with a token`, () => {
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
 
-  testData.forEach(({ message, data, expectation }) => {
-    it(`returns ${expectation}, when ${message}`, () => {
-      const instance = new BoclipsKeycloakSecurity({ options: opts() });
+    // @ts-ignore
+    instance.keycloakInstance = {
+      authenticated: true,
+      token: 'token123',
+    };
 
-      // @ts-ignore
-      instance.keycloakInstance = data;
+    expect(instance.isAuthenticated()).toEqual(true);
+  });
 
-      expect(instance.isAuthenticated()).toEqual(expectation);
-    });
+  it(`returns false when not authenticated`, () => {
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
+
+    // @ts-ignore
+    instance.keycloakInstance = {
+      authenticated: false,
+    };
+
+    expect(instance.isAuthenticated()).toEqual(false);
+  });
+  it(`returns false, when authenticated with no token`, () => {
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
+
+    // @ts-ignore
+    instance.keycloakInstance = {
+      authenticated: true,
+    };
+
+    expect(instance.isAuthenticated()).toEqual(false);
   });
 });
 
