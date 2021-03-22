@@ -475,3 +475,50 @@ describe('The tokenFactory', () => {
     return expect(tokenPromise).rejects.toEqual(false);
   });
 });
+
+describe(`hasRole`, () => {
+  it(`returns true if current user has the requested realm role`, () => {
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
+
+    // @ts-ignore
+    instance.keycloakInstance = {
+      authenticated: true,
+      token: 'token123',
+      realmAccess: {
+        roles: ['BOCLIPS_WEB_APP', 'TEACHERS'],
+      },
+    };
+
+    expect(instance.hasRole("BOCLIPS_WEB_APP")).toEqual(true);
+  });
+
+  it(`returns false if current user doesn't have the requested realm role`, () => {
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
+
+    // @ts-ignore
+    instance.keycloakInstance = {
+      authenticated: true,
+      token: 'token123',
+      realmAccess: {
+        roles: ['TEACHERS'],
+      },
+    };
+
+    expect(instance.hasRole("BOCLIPS_WEB_APP")).toEqual(false);
+  });
+
+  it(`returns false if current user is not authenticated`, () => {
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
+
+    // @ts-ignore
+    instance.keycloakInstance = {
+      authenticated: false,
+      token: 'token123',
+      realmAccess: {
+        roles: ['BOCLIPS_WEB_APP', 'TEACHERS'],
+      },
+    };
+
+    expect(instance.hasRole("BOCLIPS_WEB_APP")).toEqual(false);
+  });
+});

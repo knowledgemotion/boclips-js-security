@@ -156,4 +156,8 @@ export class BoclipsKeycloakSecurity implements BoclipsSecurity {
     });
 
   public getKeycloakInstance = () => this.keycloakInstance;
+
+  public hasRole = (role: string): boolean => {
+    return this.keycloakInstance.realmAccess.roles.indexOf(role) > -1 && this.isAuthenticated()
+  }
 }

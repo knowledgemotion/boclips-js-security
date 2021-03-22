@@ -28,6 +28,7 @@ export interface BoclipsSecurity {
   getTokenFactory: (validityTime: number) => () => Promise<string>;
   configureAxios: () => void;
   ssoLogin: (options: SsoLoginOptions) => void;
+  hasRole: (role: string) => boolean;
 }
 
 let instance = null;
