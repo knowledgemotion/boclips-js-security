@@ -521,4 +521,18 @@ describe(`hasRole`, () => {
 
     expect(instance.hasRole("BOCLIPS_WEB_APP")).toEqual(false);
   });
+
+  it(`returns false if current user does not have roles`, () => {
+    const instance = new BoclipsKeycloakSecurity({ options: opts() });
+
+    // @ts-ignore
+    instance.keycloakInstance = {
+      authenticated: false,
+      token: 'token123',
+      realmAccess: {
+      },
+    };
+
+    expect(instance.hasRole("BOCLIPS_WEB_APP")).toEqual(false);
+  });
 });
