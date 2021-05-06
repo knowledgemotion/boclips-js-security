@@ -41,7 +41,7 @@
     "react-dom": "^17.0.1",
     "serve": "^11.3.2",
     "ts-jest": "^25.3.1",
-    "ts-loader": "^8.1.0",
+    "ts-loader": "^9.1.2",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-language-service": "^0.9.9",
