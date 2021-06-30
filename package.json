@@ -47,7 +47,7 @@
     "tslint-language-service": "^0.9.9",
     "tslint-plugin-prettier": "2.3.x",
     "typescript": "^4.2.4",
-    "webpack": "^4.44.2",
+    "webpack": "^5.41.1",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2"
   },
