@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [7.0.0] - 2021-03-25
+## [7.0.0] - 2021-07-09
 
 - Upgrade to Keycloak 14.0.0
 
