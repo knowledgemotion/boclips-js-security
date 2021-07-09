@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [7.0.0] - 2021-03-25
+
+- Upgrade to Keycloak 14.0.0
+
 ## [6.1.1] - 2021-03-25
 
 - hasRole can handle a user's roles being null
